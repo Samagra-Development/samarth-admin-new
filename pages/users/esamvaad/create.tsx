@@ -63,7 +63,7 @@ const CreateUser: NextPage = () => {
 
                     <Form.Item
                         label={'Username'}
-                        rules={[{required: true, message: 'Required'}]}
+                        rules={[{required: true, message: 'Username Required'}]}
 
                         name={['user', 'username']}>
                         <Input/>
@@ -84,7 +84,7 @@ const CreateUser: NextPage = () => {
                     </Form.Item>
                     <Form.Item
                         label={'Email'}
-                        rules={[{required: true, message: 'Required'}]}
+                        rules={[{required: true,type:"email", message: 'Required'}]}
 
                         name={['user', 'email']}>
                         <Input/>
@@ -139,6 +139,17 @@ const CreateUser: NextPage = () => {
                                     </Space>
                                 </Radio.Group>
                             </Form.Item>
+                            <Form.Item
+                                label={'Username Status'}
+                                name={['user', 'usernameStatus']}>
+                                <Select>
+                                    {
+                                        ['ACTIVE'].map((status: string) => {
+                                            return <Select.Option key={status}>{status}</Select.Option>
+                                        })
+                                    }
+                                </Select>
+                            </Form.Item>
                         </>
                     }
                     <Form.Item
@@ -159,7 +170,7 @@ const CreateUser: NextPage = () => {
                                 </Col>
                                 {
                                     school && <Col>
-                                        <Tooltip title="copy git url">
+                                        <Tooltip title={`School: ${school.name}`}>
                                             <Button icon={<CheckCircleFilled/>} style={{color: 'green'}}/>
                                         </Tooltip>
                                     </Col>
@@ -167,17 +178,7 @@ const CreateUser: NextPage = () => {
                             </Row>
                         </Input.Group>
                     </Form.Item>
-                    <Form.Item
-                        label={'Username Status'}
-                        name={['user', 'usernameStatus']}>
-                        <Select>
-                            {
-                                ['ACTIVE'].map((status: string) => {
-                                    return <Select.Option key={status}>{status}</Select.Option>
-                                })
-                            }
-                        </Select>
-                    </Form.Item>
+
                     {/*<Form.Item*/}
                     {/*    label={'Registration Username'}*/}
                     {/*    name={['registration', 'username']}>*/}

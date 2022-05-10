@@ -95,7 +95,7 @@ const UsersList: NextPage = () => {
     }, [user]);
     return (
         <DesktopList title={application?.name} addEnable={permissions?.canCreate} filters={[
-            <Input key={'search-udise'} value={udise} placeholder={'Search by UDISE'}
+            <Input key={'search-udise'} value={udise} placeholder={'Search User'}
                    onChange={(e) => setUDISE(e.target.value)}/>,
             <Select
                 key={'role-search'}

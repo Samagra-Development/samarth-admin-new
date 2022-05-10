@@ -45,7 +45,7 @@ const CreateUser: NextPage = () => {
                             style={{width: '100%'}}
                         >
                             {
-                                ['Teacher', 'Principal', 'School'].map((o) => {
+                                [ 'School'].map((o) => {
                                     return <Select.Option key={o} value={o}>{o}</Select.Option>
                                 })
                             }

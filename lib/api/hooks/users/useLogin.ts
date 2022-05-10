@@ -3,6 +3,7 @@ import {StorageService} from "../../../utility/storage-service";
 import {client} from "../../client";
 import {useQuery} from "react-query";
 import {useRouter} from "next/router";
+import {message, notification} from "antd";
 
 type ReturnType = {
     user: any
@@ -35,9 +36,11 @@ export const useLogin = (): ReturnType => {
                 localStorage.setItem('user', JSON.stringify(response?.data?.result?.data?.user));
                 localStorage.setItem('token', response?.data?.result?.data?.user?.token);
                 setUser(response?.data?.result?.data?.user);
+            } else {
+                notification.error({message: response?.data?.params?.errMsg});
             }
         } catch (e) {
-
+            notification.error({message: "Unable to verify"});
         }
         setIsLoading(false);
     }
