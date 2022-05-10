@@ -2,10 +2,8 @@ import type {NextPage} from 'next'
 import styles from '../../../styles/Users.module.scss';
 import {Button, Card, Form, Input, Select, Space} from "antd";
 import {useRouter} from "next/router";
-import {useUserCreate} from "../../../lib/api/hooks/users/useUserCreate";
-import {Applications} from "../../../lib/api/hooks/users/useUsers";
-import {roles} from "aria-query";
 import {ApplicationId} from "./application";
+import {useUserCreate} from "../../lib/api/hooks/users/useUserCreate";
 
 const {useForm} = Form;
 const CreateUser: NextPage = () => {

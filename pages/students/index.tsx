@@ -69,12 +69,7 @@ const UsersList: NextPage = () => {
             </Space>
         },
     ];
-    useEffect(() => {
-        if (applicationId) {
-            refresh(applicationId)
-            setApplication(Applications.find((a) => a.id === applicationId))
-        }
-    }, [applicationId])
+
     useEffect(() => {
         if (user) {
             if (!permissions || !permissions.canRead) {
@@ -83,15 +78,7 @@ const UsersList: NextPage = () => {
         }
     }, [user]);
     return (
-        <DesktopList title={application?.name} addEnable={permissions?.canCreate}>
-            <Table loading={isLoading} dataSource={users} columns={columns} pagination={{
-                current: currentPage, total: total,
-                onChange: (page) => {
-                    refresh(applicationId, {page})
-                },
-                pageSize: pageSize
-            }}/>
-        </DesktopList>
+       <></>
     )
 }
 
