@@ -1,0 +1,1 @@
+export const DUMMY_ROUTE = '/dummy/[route]';
