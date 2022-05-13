@@ -1,5 +1,5 @@
-import {ApplicationId as EsamvaadApplicationId} from "../pages/users/esamvaad/application";
-import {ApplicationId as ShikshaSaathiApplicationId} from "../pages/users/shiksha-saathi/application";
+import {ApplicationId as EsamvaadApplicationId} from "./esamaad-application";
+import {ApplicationId as ShikshaSaathiApplicationId} from "./shiksha-application";
 
 export const Permissions: any = {
     'State': {

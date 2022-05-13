@@ -49,6 +49,7 @@ export const client = async (endpoint: string, {body, ...customConfig}: any = {}
 
             const response = await window.fetch(BASE_URL + endpoint, config)
 
+            console.log(response);
             if (response.ok) {
                 if (response.status === 204) {
                     return {
@@ -74,17 +75,18 @@ export const client = async (endpoint: string, {body, ...customConfig}: any = {}
 
             } else if (response.status === 400) {
                 data = await response.json()
-                let message = data.message;
-                if (data.errorDetails) {
-                    message = data.errorDetails.map((e: any) => `${e.error}`).join(', ')
+                let message = '';
+                let errors = [];
+                if (data.exception?.fieldErrors) {
+                    for(let i in data.exception?.fieldErrors){
+                        console.log(data.exception?.fieldErrors[i]);
+                        errors.push(data.exception?.fieldErrors[i]?.map((a: any)=>a.message)?.join(', '));
+                    }
+                }else{
+                    data.exception
                 }
-                notification.error({message: message || 'Forbidden'})
-                return {
-                    status: response.status,
-                    data,
-                    headers: response.headers,
-                    url: response.url,
-                };
+                message = errors.join(', ');
+                throw Error (message || 'Forbidden');
             } else if (response.body) {
                 data = await response.json();
                 notification.error({message: data.message})

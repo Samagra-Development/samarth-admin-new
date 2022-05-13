@@ -8,7 +8,7 @@ import {CheckCircleFilled, CodepenCircleFilled, EditFilled} from "@ant-design/ic
 import {useEffect, useState} from "react";
 import {useLogin} from "../../../lib/api/hooks/users/useLogin";
 import {Permissions} from "../../../components/role-access";
-import {ApplicationId} from "./application";
+import {ApplicationId} from "../../../components/shiksha-application";
 import {getLevelFromDesignation} from "../../../components/designation-level";
 
 const {Text} = Typography;

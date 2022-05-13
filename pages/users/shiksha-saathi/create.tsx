@@ -5,7 +5,7 @@ import {useRouter} from "next/router";
 import {useUserCreate} from "../../../lib/api/hooks/users/useUserCreate";
 import {Applications} from "../../../lib/api/hooks/users/useUsers";
 import {roles} from "aria-query";
-import {ApplicationId} from "./application";
+import {ApplicationId} from "../../../components/shiksha-application";
 
 const {useForm} = Form;
 const CreateUser: NextPage = () => {

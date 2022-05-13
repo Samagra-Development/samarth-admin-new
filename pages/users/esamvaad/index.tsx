@@ -8,7 +8,7 @@ import {CheckCircleFilled, CodepenCircleFilled, EditFilled} from "@ant-design/ic
 import {useEffect, useState} from "react";
 import {useLogin} from "../../../lib/api/hooks/users/useLogin";
 import {Permissions} from "../../../components/role-access";
-import {ApplicationId} from "./application";
+import {ApplicationId} from "../../../components/esamaad-application";
 
 const {Text} = Typography;
 const UsersList: NextPage = () => {
@@ -39,7 +39,7 @@ const UsersList: NextPage = () => {
         },
         {
             title: 'Mobile Phone',
-            dataIndex: 'mobilePhone',
+            dataIndex: ['data','phone'],
             key: 'mobilePhone',
         },
         {

@@ -3,7 +3,7 @@ import styles from '../../../styles/Users.module.scss';
 import {Button, Card, Col, Form, Input, notification, Radio, Row, Select, Space, Tooltip} from "antd";
 import {useRouter} from "next/router";
 import {useUserCreate} from "../../../lib/api/hooks/users/useUserCreate";
-import {ApplicationId} from "./application";
+import {ApplicationId} from "../../../components/esamaad-application";
 import {log} from "util";
 import {useEffect, useState} from "react";
 import {designationLevels} from "../../../components/designation-level";
@@ -42,22 +42,25 @@ const CreateUser: NextPage = () => {
                         }
                     }}
                     onFinish={(values: any) => {
-                        values = JSON.parse(JSON.stringify({...values, registration: values.user}));
-                        values['registration']['applicationId'] = ApplicationId;
+                        values = JSON.parse(JSON.stringify({...values,}));
+                        values['registration'] = {
+                            ['applicationId']: ApplicationId,
+                            "username": values['user']['username'],
+                            "roles": values['user']['roles'],
+                        };
                         if (!school) {
                             notification.error({message: "School not found with this UDISE"});
                             return;
                         }
                         values['user']['data']['school'] = school.id;
+                        values['user']['password'] = 'himachal12345';
+                        values['user']['data']['phone'] = values['user']['mobilephone'];
+                        values['user']['data']['accountName'] = values['user']['fullname'];
                         delete values['user']['roles'];
-                        delete values['registration']['mobilePhone'];
-                        delete values['registration']['email'];
-                        delete values['registration']['firstName'];
-                        delete values['registration']['data'];
-                        console.log(values);
 
                         mutate(values, (data: any) => {
-                            // router.back();
+                            notification.success({message: 'User Added'});
+                            router.back();
                         });
                     }}>
 
@@ -72,21 +75,14 @@ const CreateUser: NextPage = () => {
                     <Form.Item
                         label={'Name'}
                         rules={[{required: true, message: 'Required'}]}
-                        name={['user', 'firstName']}>
+                        name={['user', 'fullname']}>
                         <Input/>
                     </Form.Item>
                     <Form.Item
                         label={'Mobile'}
                         rules={[{required: true, message: 'Required'}]}
 
-                        name={['user', 'mobilePhone']}>
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item
-                        label={'Email'}
-                        rules={[{required: true,type:"email", message: 'Required'}]}
-
-                        name={['user', 'email']}>
+                        name={['user', 'mobilephone']}>
                         <Input/>
                     </Form.Item>
 
@@ -96,12 +92,13 @@ const CreateUser: NextPage = () => {
                         name={['user', 'roles']}>
                         <Select
                             mode="tags"
+                            disabled={true}
                             placeholder="Please select"
                             style={{width: '100%'}}
                             onChange={(a: any) => setFormTypes(a)}
                         >
                             {
-                                ['Principal', 'Teacher', 'school'].map((o) => {
+                                ['school'].map((o) => {
                                     return <Select.Option key={o} value={o}>{o}</Select.Option>
                                 })
                             }
@@ -154,29 +151,17 @@ const CreateUser: NextPage = () => {
                     }
                     <Form.Item
                         label={'Password'}
-                        rules={[{required: true, message: 'Required'}]}
                         name={['user', 'password']}>
-                        <Input/>
+                        <Input placeholder={'This will be the default password'} disabled={true}/>
                     </Form.Item>
 
                     <Form.Item
-                        label={'School UDISE'}
+                        label={<Space>School UDISE {school && <Tooltip title={`School: ${school.name}`}>
+                            <CheckCircleFilled style={{color: 'green'}}/>
+                        </Tooltip>}</Space>}
                         rules={[{required: true, message: 'Required'}]}
                         name={['user', 'data', 'udise']}>
-                        <Input.Group style={{width: '100%'}}>
-                            <Row style={{width: '100%'}}>
-                                <Col flex={'auto'}>
-                                    <Input onChange={(e: any) => setUDISE(e.target.value)}/>
-                                </Col>
-                                {
-                                    school && <Col>
-                                        <Tooltip title={`School: ${school.name}`}>
-                                            <Button icon={<CheckCircleFilled/>} style={{color: 'green'}}/>
-                                        </Tooltip>
-                                    </Col>
-                                }
-                            </Row>
-                        </Input.Group>
+                        <Input onChange={(e: any) => setUDISE(e.target.value)}/>
                     </Form.Item>
 
                     {/*<Form.Item*/}
