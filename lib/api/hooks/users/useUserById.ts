@@ -1,8 +1,5 @@
 import {useEffect, useState} from "react";
-import {StorageService} from "../../../utility/storage-service";
 import {client} from "../../client";
-import {useQuery} from "react-query";
-import {useRouter} from "next/router";
 import {getLevelFromDesignation} from "../../../../components/designation-level";
 
 type ReturnType = {
@@ -12,9 +9,7 @@ type ReturnType = {
 }
 export const USERS = `admin/all`;
 export const USERS_SEARCH = `admin/searchUser`;
-const fetchUsers = (body = {}) => {
-    return client.post(USERS, body)
-}
+
 export const Applications: { [key: string]: string } = {
     "esamvaad": "f0ddb3f6-091b-45e4-8c0f-889f89d4f5da",
     "shiksha-saathi": "1ae074db-32f3-4714-a150-cc8a370eafd1",
