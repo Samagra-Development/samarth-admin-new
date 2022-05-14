@@ -1,16 +1,17 @@
 import type {NextPage} from 'next'
 import styles from '../../../../styles/Users.module.scss';
-import {Button, Card, Form, Input, notification, Radio, Select, Space, Tooltip} from "antd";
+import {Button, Card, Form, Input, notification, Radio, Select, Skeleton, Space, Tooltip} from "antd";
 import {router} from "next/client";
 import {useRouter} from "next/router";
 import {useUserCreate} from "../../../../lib/api/hooks/users/useUserCreate";
-import {Applications} from "../../../../lib/api/hooks/users/useUsers";
+import {Applications, useUsers} from "../../../../lib/api/hooks/users/useUsers";
 import {useEffect, useState} from "react";
 import {useSearchSchoolByUDISE} from "../../../../lib/api/hooks/schools/useSearchSchoolByUdise";
 import {ApplicationId} from "../../../../components/esamaad-application";
 import {designationLevels, getLevelFromDesignation} from "../../../../components/designation-level";
 import {CheckCircleFilled} from "@ant-design/icons";
 import {getAllDistricts, getBlocks, getClusters, getVisibility} from "../../../../components/district-block-cluster";
+import {useUserByUsername} from "../../../../lib/api/hooks/users/useUserByUsername";
 
 const {useForm} = Form;
 const EditUser: NextPage = () => {
@@ -23,9 +24,24 @@ const EditUser: NextPage = () => {
     const [block, setBlock] = useState('' as string);
     const [cluster, setCluster] = useState('' as string);
     const {id} = router.query;
+
+    const {user, refresh, isLoading: _fetchLoading} = useUserByUsername(ApplicationId, {
+        'username': router.query.id
+    });
     useEffect(() => {
-        console.log(id);
-    }, [])
+        if (user) {
+            console.log({...user, user: user});
+            console.log('===');
+            form.setFieldsValue({...user, user: user});
+        }
+    }, [user])
+    useEffect(() => {
+        if (id) {
+            refresh(ApplicationId, {
+                'username': id
+            })
+        }
+    }, [id])
     useEffect(() => {
         form.setFieldsValue({['geographic_level']: getLevelFromDesignation(designation),});
         setDistrict('')
@@ -39,6 +55,7 @@ const EditUser: NextPage = () => {
         form.setFieldsValue({['cluster']: '',});
         setCluster('');
     }, [block])
+
     return (
         <div className={styles.formWrapper}>
             <Card>
