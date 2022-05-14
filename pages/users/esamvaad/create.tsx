@@ -54,8 +54,8 @@ const CreateUser: NextPage = () => {
                         }
                         values['user']['data']['school'] = school.id;
                         values['user']['password'] = 'himachal12345';
-                        values['user']['data']['phone'] = values['user']['mobilephone'];
-                        values['user']['data']['accountName'] = values['user']['fullname'];
+                        values['user']['data']['phone'] = values['user']['mobilePhone'];
+                        values['user']['data']['accountName'] = values['user']['fullName'];
                         delete values['user']['roles'];
 
                         mutate(values, (data: any) => {
@@ -75,17 +75,16 @@ const CreateUser: NextPage = () => {
                     <Form.Item
                         label={'Name'}
                         rules={[{required: true, message: 'Required'}]}
-                        name={['user', 'fullname']}>
+                        name={['user', 'fullName']}>
                         <Input/>
                     </Form.Item>
                     <Form.Item
                         label={'Mobile'}
                         rules={[{required: true, message: 'Required'}]}
 
-                        name={['user', 'mobilephone']}>
+                        name={['user', 'mobilePhone']}>
                         <Input/>
                     </Form.Item>
-
                     <Form.Item
                         label={'Roles'}
                         rules={[{required: true, message: 'Required'}]}
@@ -149,11 +148,11 @@ const CreateUser: NextPage = () => {
                             </Form.Item>
                         </>
                     }
-                    <Form.Item
-                        label={'Password'}
-                        name={['user', 'password']}>
-                        <Input placeholder={'This will be the default password'} disabled={true}/>
-                    </Form.Item>
+                    {/*<Form.Item*/}
+                    {/*    label={'Password'}*/}
+                    {/*    name={['user', 'password']}>*/}
+                    {/*    <Input placeholder={'This will be the default password'} disabled={true}/>*/}
+                    {/*</Form.Item>*/}
 
                     <Form.Item
                         label={<Space>School UDISE {school && <Tooltip title={`School: ${school.name}`}>

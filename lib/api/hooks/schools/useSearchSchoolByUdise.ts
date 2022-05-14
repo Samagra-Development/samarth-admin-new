@@ -9,8 +9,8 @@ type ReturnType = {
     isLoading: boolean
     refresh: any
 }
-export const SCHOOL_BY_UDISE = `query($udise: String!){
-  old_schools(limit:10, where:{udise:{_eq:$udise}}){
+export const SCHOOL_BY_UDISE = `query($udise: Int!){
+  school(limit:10, where:{udise:{_eq:$udise}}){
      name
      id
   }
@@ -33,8 +33,8 @@ export const useSearchSchoolByUDISE = (): ReturnType => {
                 udise
             })
             const d = await response.json();
-            if (d.data?.old_schools?.[0]) {
-                setSchool(d.data?.old_schools?.[0]);
+            if (d.data?.school?.[0]) {
+                setSchool(d.data?.school?.[0]);
             } else {
                 setSchool(null)
             }

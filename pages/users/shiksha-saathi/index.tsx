@@ -3,18 +3,20 @@ import {useRouter} from "next/router";
 import {DesktopList} from "../../../components/layouts/list/desktop.list";
 import {useUsers} from "../../../lib/api/hooks/users/useUsers";
 import {Applications} from "../../../lib/utility";
-import {Button, Space, Table, Tag, Typography} from "antd";
+import {Button, Form, Input, Select, Space, Table, Tag, Typography} from "antd";
 import {CheckCircleFilled, CodepenCircleFilled, EditFilled} from "@ant-design/icons";
 import {useEffect, useState} from "react";
 import {useLogin} from "../../../lib/api/hooks/users/useLogin";
 import {Permissions} from "../../../components/role-access";
 import {ApplicationId} from "../../../components/shiksha-application";
-import {getLevelFromDesignation} from "../../../components/designation-level";
 
 const {Text} = Typography;
 const UsersList: NextPage = () => {
     const router = useRouter()
     const [application, setApplication] = useState(null as any);
+    const [udise, setUDISE] = useState('' as any);
+    const [role, setRole] = useState('' as any);
+    const [page, setCurrentPage] = useState('' as any);
     const {asPath} = router;
     const applicationId = ApplicationId;
     const {user, logout} = useLogin();
@@ -37,20 +39,8 @@ const UsersList: NextPage = () => {
         },
         {
             title: 'Mobile Phone',
-            dataIndex: 'mobilePhone',
+            dataIndex: ['data','mobilePhone'],
             key: 'mobilePhone',
-        },
-        {
-            title: 'Level',
-            key: 'level',
-            render: (a: any) => {
-                const registration = a.registrations?.find((r: any) => r.applicationId === applicationId);
-                if (!registration) {
-                    return <Text>-</Text>
-                }
-                const designation = registration?.data?.roleData?.designation;
-                return <Text>{getLevelFromDesignation(designation) || '-'}</Text>
-            }
         },
         {
             title: 'Roles',
@@ -76,7 +66,7 @@ const UsersList: NextPage = () => {
                     permissions?.canEdit && <Button shape={"circle"}>
                         <EditFilled onClick={
                             () => {
-                                router.push(`${asPath}/${a.id}/edit`)
+                                router.push(`${asPath}/${a.username}/edit`)
                             }
                         }/>
                     </Button>
@@ -90,6 +80,12 @@ const UsersList: NextPage = () => {
             setApplication(Applications.find((a) => a.id === applicationId))
         }
     }, [applicationId])
+
+    useEffect(() => {
+        setCurrentPage(1);
+        refresh(applicationId, {page: 1, udise, role})
+    }, [role, udise])
+
     useEffect(() => {
         if (user) {
             if (!permissions || !permissions.canRead) {
@@ -98,11 +94,28 @@ const UsersList: NextPage = () => {
         }
     }, [user]);
     return (
-        <DesktopList title={application?.name} addEnable={permissions?.canCreate}>
+        <DesktopList title={application?.name} addEnable={permissions?.canCreate} filters={[
+            <Input key={'search-udise'} value={udise} placeholder={'Search User'}
+                   onChange={(e) => setUDISE(e.target.value)}/>,
+            <Select
+                key={'role-search'}
+                placeholder="Please select role"
+                onSelect={(a: any) => setRole(a)}
+                style={{width: '160px'}}
+            >
+                {
+                    ['Teacher', 'Principal', 'school'].map((o) => {
+                        return <Select.Option key={o} value={o}>{o}</Select.Option>
+                    })
+                }
+            </Select>
+        ]}>
             <Table loading={isLoading} dataSource={users} columns={columns} pagination={{
                 current: currentPage, total: total,
-                onChange: (page) => {
-                    refresh(applicationId, {page})
+                onChange: (_page) => {
+                    setCurrentPage(_page);
+                    refresh(applicationId, {page, udise, role})
+
                 },
                 pageSize: pageSize
             }}/>
