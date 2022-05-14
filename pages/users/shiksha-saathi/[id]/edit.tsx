@@ -8,8 +8,9 @@ import {Applications} from "../../../../lib/api/hooks/users/useUsers";
 import {useEffect, useState} from "react";
 import {useSearchSchoolByUDISE} from "../../../../lib/api/hooks/schools/useSearchSchoolByUdise";
 import {ApplicationId} from "../../../../components/esamaad-application";
-import {designationLevels} from "../../../../components/designation-level";
+import {designationLevels, getLevelFromDesignation} from "../../../../components/designation-level";
 import {CheckCircleFilled} from "@ant-design/icons";
+import {getAllDistricts, getBlocks, getClusters, getVisibility} from "../../../../components/district-block-cluster";
 
 const {useForm} = Form;
 const EditUser: NextPage = () => {
@@ -18,19 +19,26 @@ const EditUser: NextPage = () => {
     const {mutate, isLoading} = useUserCreate();
     const [formTypes, setFormTypes] = useState([] as string[]);
     const [designation, setDesignation] = useState('' as string);
-    const [udise, setUDISE] = useState('' as string);
+    const [district, setDistrict] = useState('' as string);
+    const [block, setBlock] = useState('' as string);
+    const [cluster, setCluster] = useState('' as string);
     const {id} = router.query;
-    console.log(id);
-    // const [school, setSchool] = useState(null as any);
-    const {school, refresh: fetchSchool} = useSearchSchoolByUDISE();
     useEffect(() => {
-        fetchSchool(udise);
-        if (udise) {
-            // useSearchUdise(udise);
-        } else {
-            // setSchool(null)
-        }
-    }, [udise])
+        console.log(id);
+    }, [])
+    useEffect(() => {
+        form.setFieldsValue({['geographic_level']: getLevelFromDesignation(designation),});
+        setDistrict('')
+        form.setFieldsValue({['district']: '',});
+    }, [designation])
+    useEffect(() => {
+        form.setFieldsValue({['block']: '',});
+        setBlock('');
+    }, [district])
+    useEffect(() => {
+        form.setFieldsValue({['cluster']: '',});
+        setCluster('');
+    }, [block])
     return (
         <div className={styles.formWrapper}>
             <Card>
@@ -48,18 +56,22 @@ const EditUser: NextPage = () => {
                         values['registration'] = {
                             ['applicationId']: ApplicationId,
                             "username": values['user']['username'],
-                            "roles": values['user']['roles'],
+                            "roles": [values['user']['data']['roleData']['designation']],
                         };
-                        if (!school) {
-                            notification.error({message: "School not found with this UDISE"});
-                            return;
-                        }
-                        values['user']['data']['school'] = school.id;
-                        values['user']['password'] = 'himachal12345';
-                        values['user']['data']['phone'] = values['user']['mobilephone'];
-                        values['user']['data']['accountName'] = values['user']['fullname'];
+                        values['user']['password'] = '1234abcd';
+                        values['user']['data']['phone'] = values['user']['mobilePhone'];
+                        values['user']['data']['roleData']['geographic_level'] = values['geographic_level'];
+                        values['user']['data']['roleData']['district'] = values['district'];
+                        values['user']['data']['roleData']['block'] = values['block'];
+                        values['user']['data']['roleData']['cluster'] = values['cluster'];
+                        values['user']['data']['accountName'] = values['user']['fullName'];
+                        delete values['geographic_level'];
+                        delete values['district'];
+                        delete values['block'];
+                        delete values['cluster'];
                         delete values['user']['roles'];
 
+                        console.log(values);
                         mutate(values, (data: any) => {
                             notification.success({message: 'User Added'});
                             router.back();
@@ -77,117 +89,96 @@ const EditUser: NextPage = () => {
                     <Form.Item
                         label={'Name'}
                         rules={[{required: true, message: 'Required'}]}
-                        name={['user', 'fullname']}>
+                        name={['user', 'fullName']}>
                         <Input/>
                     </Form.Item>
                     <Form.Item
                         label={'Mobile'}
                         rules={[{required: true, message: 'Required'}]}
 
-                        name={['user', 'mobilephone']}>
+                        name={['user', 'mobilePhone']}>
                         <Input/>
                     </Form.Item>
-
                     <Form.Item
-                        label={'Roles'}
+                        label={'Designation'}
                         rules={[{required: true, message: 'Required'}]}
-                        name={['user', 'roles']}>
+                        name={['user', 'data', 'roleData', 'designation']}>
                         <Select
-                            mode="tags"
-                            disabled={true}
                             placeholder="Please select"
                             style={{width: '100%'}}
-                            onChange={(a: any) => setFormTypes(a)}
+                            onChange={(a: any) => setDesignation(a)}
                         >
                             {
-                                ['school'].map((o) => {
-                                    return <Select.Option key={o} value={o}>{o}</Select.Option>
+                                designationLevels.map((o) => {
+                                    return <Select.Option key={o.designation}
+                                                          value={o.designation}>{o.designation}</Select.Option>
                                 })
                             }
                         </Select>
                     </Form.Item>
                     {
-                        formTypes?.indexOf('Principal') > -1 && <>
-                            <Form.Item
-                                label={'Designation'}
-                                name={['user', 'designation']}>
-                                <Select
-                                    placeholder="Please select"
-                                    style={{width: '100%'}}
-                                    onChange={(a: any) => setDesignation(a)}
-                                >
-                                    {
-                                        designationLevels.map((o) => {
-                                            return <Select.Option key={o.designation}
-                                                                  value={o.designation}>{o.designation}</Select.Option>
-                                        })
-                                    }
-                                </Select>
-                            </Form.Item>
-
-                            <Form.Item
-                                label={'Mode Of Employment'}
-                                name={['user', 'data', 'modeOfEmployment']}>
-                                <Radio.Group>
-                                    <Space direction="vertical">
-                                        {
-                                            ['Permanent', 'Contractual'].map((status: string) => {
-                                                return <Radio key={status} value={status}>{status}</Radio>
-                                            })
-                                        }
-                                    </Space>
-                                </Radio.Group>
-                            </Form.Item>
-                            <Form.Item
-                                label={'Username Status'}
-                                name={['user', 'usernameStatus']}>
-                                <Select>
-                                    {
-                                        ['ACTIVE'].map((status: string) => {
-                                            return <Select.Option key={status}>{status}</Select.Option>
-                                        })
-                                    }
-                                </Select>
-                            </Form.Item>
-                        </>
+                        getVisibility(designation, 'District') && <Form.Item
+                            label={'District'}
+                            rules={[{required: true, message: 'District Required'}]}
+                            name={['district']}>
+                            <Select
+                                placeholder="Please select"
+                                style={{width: '100%'}}
+                                onChange={(a: any) => setDistrict(a)}
+                            >
+                                {
+                                    getAllDistricts().map((o) => {
+                                        return <Select.Option key={o}
+                                                              value={o}>{o}</Select.Option>
+                                    })
+                                }
+                            </Select>
+                        </Form.Item>
+                    }
+                    {
+                        getVisibility(designation, 'Block') && district && <Form.Item
+                            label={'Block'}
+                            rules={[{required: true, message: 'Block Required'}]}
+                            name={['block']}>
+                            <Select
+                                placeholder="Please select"
+                                style={{width: '100%'}}
+                                onChange={(a: any) => setBlock(a)}
+                            >
+                                {
+                                    getBlocks(district).map((o) => {
+                                        return <Select.Option key={o}
+                                                              value={o}>{o}</Select.Option>
+                                    })
+                                }
+                            </Select>
+                        </Form.Item>
+                    }
+                    {
+                        getVisibility(designation, 'Cluster') && district && block && <Form.Item
+                            label={'Cluster'}
+                            rules={[{required: true, message: 'Cluster Required'}]}
+                            name={['cluster']}>
+                            <Select
+                                placeholder="Please select"
+                                style={{width: '100%'}}
+                                onChange={(a: any) => setCluster(a)}
+                            >
+                                {
+                                    getClusters(block).map((o) => {
+                                        return <Select.Option key={o}
+                                                              value={o}>{o}</Select.Option>
+                                    })
+                                }
+                            </Select>
+                        </Form.Item>
                     }
                     <Form.Item
-                        label={'Password'}
-                        name={['user', 'password']}>
-                        <Input placeholder={'This will be the default password'} disabled={true}/>
+                        label={'Geographic Level'}
+                        name={['geographic_level']}>
+                        <Input disabled={true}/>
                     </Form.Item>
 
-                    <Form.Item
-                        label={<Space>School UDISE {school && <Tooltip title={`School: ${school.name}`}>
-                            <CheckCircleFilled style={{color: 'green'}}/>
-                        </Tooltip>}</Space>}
-                        rules={[{required: true, message: 'Required'}]}
-                        name={['user', 'data', 'udise']}>
-                        <Input onChange={(e: any) => setUDISE(e.target.value)}/>
-                    </Form.Item>
-
-                    {/*<Form.Item*/}
-                    {/*    label={'Registration Username'}*/}
-                    {/*    name={['registration', 'username']}>*/}
-                    {/*    <Input/>*/}
-                    {/*</Form.Item>*/}
-
-                    {/*<Form.Item*/}
-                    {/*    label={'Timezone'}*/}
-                    {/*    name={['registration', 'timezone']}>*/}
-                    {/*    <Input/>*/}
-                    {/*</Form.Item>*/}
-                    {/*<Form.Item*/}
-                    {/*    label={'Username Status'}*/}
-                    {/*    name={['registration', 'usernameStatus']}>*/}
-                    {/*    <Select>*/}
-                    {/*        {*/}
-                    {/*            ['ACTIVE'].map((status: string) => {*/}
-                    {/*                return <Select.Option key={status}>{status}</Select.Option>*/}
-                    {/*            })*/}
-                    {/*        }*/}
-                    {/*    </Select>*/}
-                    {/*</Form.Item>*/}
                     <Form.Item>
                         <Space>
                             <Button htmlType={'submit'} type={'primary'} loading={isLoading}>
