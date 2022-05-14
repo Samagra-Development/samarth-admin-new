@@ -11,7 +11,7 @@ import {ApplicationId} from "../../../../components/esamaad-application";
 import {designationLevels, getLevelFromDesignation} from "../../../../components/designation-level";
 import {CheckCircleFilled} from "@ant-design/icons";
 import {getAllDistricts, getBlocks, getClusters, getVisibility} from "../../../../components/district-block-cluster";
-import {useUserByUsername} from "../../../../lib/api/hooks/users/useUserByUsername";
+import {useUserById} from "../../../../lib/api/hooks/users/useUserById";
 
 const {useForm} = Form;
 const EditUser: NextPage = () => {
@@ -25,20 +25,33 @@ const EditUser: NextPage = () => {
     const [cluster, setCluster] = useState('' as string);
     const {id} = router.query;
 
-    const {user, refresh, isLoading: _fetchLoading} = useUserByUsername(ApplicationId, {
-        'username': router.query.id
+    const {user, refresh, isLoading: _fetchLoading} = useUserById(ApplicationId, {
+        'id': router.query.id
     });
     useEffect(() => {
         if (user) {
             console.log({...user, user: user});
             console.log('===');
             form.setFieldsValue({...user, user: user});
+            setDesignation(user?.data?.roleData?.designation);
+            setTimeout(() => {
+                form.setFieldsValue({['district']: user.district});
+                setDistrict(user.district);
+            }, 100);
+            setTimeout(() => {
+                form.setFieldsValue({['block']: user.block});
+                setDistrict(user.block);
+            }, 500);
+            setTimeout(() => {
+                form.setFieldsValue({['cluster']: user.cluster});
+                setDistrict(user.cluster);
+            }, 1000);
         }
     }, [user])
     useEffect(() => {
         if (id) {
             refresh(ApplicationId, {
-                'username': id
+                'id': id
             })
         }
     }, [id])

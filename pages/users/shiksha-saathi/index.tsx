@@ -39,7 +39,7 @@ const UsersList: NextPage = () => {
         },
         {
             title: 'Mobile Phone',
-            dataIndex: ['data','mobilePhone'],
+            dataIndex: ['data', 'mobilePhone'],
             key: 'mobilePhone',
         },
         {
@@ -66,7 +66,7 @@ const UsersList: NextPage = () => {
                     permissions?.canEdit && <Button shape={"circle"}>
                         <EditFilled onClick={
                             () => {
-                                router.push(`${asPath}/${a.username}/edit`)
+                                router.push(`${asPath}/${a.id}/edit`)
                             }
                         }/>
                     </Button>
