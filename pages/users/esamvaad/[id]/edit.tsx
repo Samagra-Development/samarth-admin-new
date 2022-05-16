@@ -8,21 +8,44 @@ import {Applications} from "../../../../lib/api/hooks/users/useUsers";
 import {useEffect, useState} from "react";
 import {useSearchSchoolByUDISE} from "../../../../lib/api/hooks/schools/useSearchSchoolByUdise";
 import {ApplicationId} from "../../../../components/esamaad-application";
-import {designationLevels} from "../../../../components/designation-level";
 import {CheckCircleFilled} from "@ant-design/icons";
+import {useUserById} from "../../../../lib/api/hooks/users/useUserById";
+import {esamvaadDesignations} from "../../../../lib/esamvaad-designations";
+import {useUserUpdateById} from "../../../../lib/api/hooks/users/useUserUpdateById";
 
 const {useForm} = Form;
 const EditUser: NextPage = () => {
     const [form] = useForm();
     const router = useRouter();
-    const {mutate, isLoading} = useUserCreate();
+    const {mutate, isLoading} = useUserUpdateById();
     const [formTypes, setFormTypes] = useState([] as string[]);
     const [designation, setDesignation] = useState('' as string);
     const [udise, setUDISE] = useState('' as string);
     const {id} = router.query;
-    console.log(id);
-    // const [school, setSchool] = useState(null as any);
+
+    const {user, refresh, isLoading: _fetchLoading} = useUserById(ApplicationId, {
+        'id': router.query.id
+    });
     const {school, refresh: fetchSchool} = useSearchSchoolByUDISE();
+
+    const schoolMode = formTypes?.length == 1 && formTypes?.[0] === 'school';
+    useEffect(() => {
+        if (user) {
+            const _reg = user?.registrations?.find((a: any) => a.applicationId === ApplicationId);
+            form.setFieldsValue({...user, user: {...user, roles: _reg?.roles || []}});
+            setFormTypes(_reg?.roles);
+            setUDISE(user?.data?.udise);
+
+        }
+    }, [user])
+    useEffect(() => {
+        if (id) {
+            refresh(ApplicationId, {
+                'id': id
+            })
+        }
+    }, [id])
+    // const [school, setSchool] = useState(null as any);
     useEffect(() => {
         fetchSchool(udise);
         if (udise) {
@@ -44,23 +67,17 @@ const EditUser: NextPage = () => {
                         }
                     }}
                     onFinish={(values: any) => {
-                        values = JSON.parse(JSON.stringify({...values,}));
-                        values['registration'] = {
-                            ['applicationId']: ApplicationId,
-                            "username": values['user']['username'],
-                            "roles": values['user']['roles'],
-                        };
-                        if (!school) {
-                            notification.error({message: "School not found with this UDISE"});
-                            return;
+                        const _v = {
+                            user: {
+                                mobilePhone: values['user']['mobilePhone'],
+                                fullName: values['user']['fullName'],
+                                data: {
+                                    phone: values['user']['mobilePhone'],
+                                    accountName: values['user']['fullName'],
+                                }
+                            }
                         }
-                        values['user']['data']['school'] = school.id;
-                        values['user']['password'] = 'himachal12345';
-                        values['user']['data']['phone'] = values['user']['mobilephone'];
-                        values['user']['data']['accountName'] = values['user']['fullname'];
-                        delete values['user']['roles'];
-
-                        mutate(values, (data: any) => {
+                        mutate(id, _v, (data: any) => {
                             notification.success({message: 'User Added'});
                             router.back();
                         });
@@ -71,20 +88,20 @@ const EditUser: NextPage = () => {
                         rules={[{required: true, message: 'Username Required'}]}
 
                         name={['user', 'username']}>
-                        <Input/>
+                        <Input disabled={true}/>
                     </Form.Item>
 
                     <Form.Item
                         label={'Name'}
                         rules={[{required: true, message: 'Required'}]}
-                        name={['user', 'fullname']}>
+                        name={['user', 'fullName']}>
                         <Input/>
                     </Form.Item>
                     <Form.Item
                         label={'Mobile'}
                         rules={[{required: true, message: 'Required'}]}
 
-                        name={['user', 'mobilephone']}>
+                        name={['user', 'mobilePhone']}>
                         <Input/>
                     </Form.Item>
 
@@ -107,7 +124,7 @@ const EditUser: NextPage = () => {
                         </Select>
                     </Form.Item>
                     {
-                        formTypes?.indexOf('Principal') > -1 && <>
+                        !schoolMode && <>
                             <Form.Item
                                 label={'Designation'}
                                 name={['user', 'designation']}>
@@ -117,7 +134,7 @@ const EditUser: NextPage = () => {
                                     onChange={(a: any) => setDesignation(a)}
                                 >
                                     {
-                                        designationLevels.map((o) => {
+                                        esamvaadDesignations.map((o) => {
                                             return <Select.Option key={o.designation}
                                                                   value={o.designation}>{o.designation}</Select.Option>
                                         })
@@ -131,31 +148,15 @@ const EditUser: NextPage = () => {
                                 <Radio.Group>
                                     <Space direction="vertical">
                                         {
-                                            ['Permanent', 'Contractual'].map((status: string) => {
+                                            ['PERMANENT', 'CONTRACTUAL'].map((status: string) => {
                                                 return <Radio key={status} value={status}>{status}</Radio>
                                             })
                                         }
                                     </Space>
                                 </Radio.Group>
                             </Form.Item>
-                            <Form.Item
-                                label={'Username Status'}
-                                name={['user', 'usernameStatus']}>
-                                <Select>
-                                    {
-                                        ['ACTIVE'].map((status: string) => {
-                                            return <Select.Option key={status}>{status}</Select.Option>
-                                        })
-                                    }
-                                </Select>
-                            </Form.Item>
                         </>
                     }
-                    <Form.Item
-                        label={'Password'}
-                        name={['user', 'password']}>
-                        <Input placeholder={'This will be the default password'} disabled={true}/>
-                    </Form.Item>
 
                     <Form.Item
                         label={<Space>School UDISE {school && <Tooltip title={`School: ${school.name}`}>
@@ -163,7 +164,7 @@ const EditUser: NextPage = () => {
                         </Tooltip>}</Space>}
                         rules={[{required: true, message: 'Required'}]}
                         name={['user', 'data', 'udise']}>
-                        <Input onChange={(e: any) => setUDISE(e.target.value)}/>
+                        <Input disabled={schoolMode} onChange={(e: any) => setUDISE(e.target.value)}/>
                     </Form.Item>
 
                     {/*<Form.Item*/}

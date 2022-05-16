@@ -96,19 +96,7 @@ const UsersList: NextPage = () => {
     return (
         <DesktopList title={application?.name} addEnable={permissions?.canCreate} filters={[
             <Input key={'search-udise'} value={udise} placeholder={'Search User'}
-                   onChange={(e) => setUDISE(e.target.value)}/>,
-            <Select
-                key={'role-search'}
-                placeholder="Please select role"
-                onSelect={(a: any) => setRole(a)}
-                style={{width: '160px'}}
-            >
-                {
-                    ['Teacher', 'Principal', 'school'].map((o) => {
-                        return <Select.Option key={o} value={o}>{o}</Select.Option>
-                    })
-                }
-            </Select>
+                   onChange={(e) => setUDISE(e.target.value)}/>
         ]}>
             <Table loading={isLoading} dataSource={users} columns={columns} pagination={{
                 current: currentPage, total: total,

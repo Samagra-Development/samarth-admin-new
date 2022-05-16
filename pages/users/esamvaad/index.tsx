@@ -66,7 +66,7 @@ const UsersList: NextPage = () => {
                     permissions?.canEdit && <Button shape={"circle"}>
                         <EditFilled onClick={
                             () => {
-                                router.push(`${asPath}/${a.username}/edit`)
+                                router.push(`${asPath}/${a.id}/edit`)
                             }
                         }/>
                     </Button>

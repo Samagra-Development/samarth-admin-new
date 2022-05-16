@@ -9,6 +9,7 @@ import {useEffect, useState} from "react";
 import {designationLevels} from "../../../components/designation-level";
 import {useSearchSchoolByUDISE} from "../../../lib/api/hooks/schools/useSearchSchoolByUdise";
 import {CheckCircleFilled} from "@ant-design/icons";
+import {esamvaadDesignations} from "../../../lib/esamvaad-designations";
 
 const {useForm} = Form;
 const CreateUser: NextPage = () => {
@@ -97,7 +98,7 @@ const CreateUser: NextPage = () => {
                             onChange={(a: any) => setFormTypes(a)}
                         >
                             {
-                                ['school'].map((o) => {
+                                ['Teacher', 'Principal', 'school'].map((o) => {
                                     return <Select.Option key={o} value={o}>{o}</Select.Option>
                                 })
                             }
@@ -114,7 +115,7 @@ const CreateUser: NextPage = () => {
                                     onChange={(a: any) => setDesignation(a)}
                                 >
                                     {
-                                        designationLevels.map((o) => {
+                                        esamvaadDesignations.map((o) => {
                                             return <Select.Option key={o.designation}
                                                                   value={o.designation}>{o.designation}</Select.Option>
                                         })

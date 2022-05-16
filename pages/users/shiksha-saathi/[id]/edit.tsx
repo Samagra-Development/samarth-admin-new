@@ -30,8 +30,6 @@ const EditUser: NextPage = () => {
     });
     useEffect(() => {
         if (user) {
-            console.log({...user, user: user});
-            console.log('===');
             form.setFieldsValue({...user, user: user});
             setDesignation(user?.data?.roleData?.designation);
             setTimeout(() => {
