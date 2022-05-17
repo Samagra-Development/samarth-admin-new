@@ -14,6 +14,7 @@ const LoginPage: NextPage = () => {
         if (user) {
             router.push('/users/esamvaad');
         }
+        console.log(process.env);
     }, [user]);
     return (
         <Content>
