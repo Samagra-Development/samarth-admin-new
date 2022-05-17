@@ -57,6 +57,7 @@ export const useUsers = (_applicationId: string, {numberOfResults, page}: Filter
                 if (udise) {
                     queryString.push(`${udise}`);
                 }
+
                 response = await client.get(USERS_SEARCH, {
                     params: {
                         "queryString": queryString.join(','),
