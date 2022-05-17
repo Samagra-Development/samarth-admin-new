@@ -43,7 +43,7 @@ export const useUsers = (_applicationId: string, {numberOfResults, page}: Filter
         try {
             setIsLoading(true)
             const _page = _page_ || 1;
-            const _numberOfResults = _numberOfResults_ ? _numberOfResults_ * (_page - 1) : 10;
+            const _numberOfResults = _numberOfResults_ ? _numberOfResults_ : 10;
             setStartRow(_numberOfResults * (_page - 1));
             setCurrentPage(_page);
             setPageSize(_numberOfResults);

@@ -114,7 +114,7 @@ const UsersList: NextPage = () => {
                 current: currentPage, total: total,
                 onChange: (_page) => {
                     setCurrentPage(_page);
-                    refresh(applicationId, {page, udise, role})
+                    refresh(applicationId, {page:_page, udise, role})
 
                 },
                 pageSize: pageSize

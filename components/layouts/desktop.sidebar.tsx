@@ -9,12 +9,12 @@ const {Sider} = Layout;
 const SideBarItems = [
     ...Applications,
     {
-        name: 'Schools',
-        key: 'schools'
+        name: 'Locations',
+        key: '/locations'
     },
     {
-        name: 'Students',
-        key: 'students'
+        name: 'Schools',
+        key: '/schools'
     },
 ];
 
