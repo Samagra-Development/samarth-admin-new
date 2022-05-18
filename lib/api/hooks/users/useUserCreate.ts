@@ -7,10 +7,12 @@ import {USERS} from "./useUsers";
 type ReturnType = {
     data: any
     mutate: any
+    changePassword: any
     isLoading: boolean
     error: any
 }
 export const USER_CREATE = 'admin/createUser'
+export const CHANGE_PASSWORD = 'admin/changePassword'
 
 export const useUserCreate = (): ReturnType => {
     const router = useRouter()
@@ -30,8 +32,22 @@ export const useUserCreate = (): ReturnType => {
         setIsLoading(false)
 
     }
+    const changePassword = async (data: any, onSuccess?: any) => {
+        try {
+            setIsLoading(true)
+            const response = await client.post(CHANGE_PASSWORD, data);
+            if (onSuccess) {
+                onSuccess(response)
+            }
+        } catch (e) {
+            setError(e);
+        }
+        setIsLoading(false)
+
+    }
     return {
         mutate,
+        changePassword,
         data,
         isLoading,
         error

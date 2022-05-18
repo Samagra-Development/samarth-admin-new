@@ -4,14 +4,11 @@ import {Button, Card, Form, Input, notification, Radio, Select, Skeleton, Space,
 import {router} from "next/client";
 import {useRouter} from "next/router";
 import {useUserCreate} from "../../../../lib/api/hooks/users/useUserCreate";
-import {Applications, useUsers} from "../../../../lib/api/hooks/users/useUsers";
 import {useEffect, useState} from "react";
-import {useSearchSchoolByUDISE} from "../../../../lib/api/hooks/schools/useSearchSchoolByUdise";
-import {ApplicationId} from "../../../../components/esamaad-application";
 import {designationLevels, getLevelFromDesignation} from "../../../../components/designation-level";
-import {CheckCircleFilled} from "@ant-design/icons";
 import {getAllDistricts, getBlocks, getClusters, getVisibility} from "../../../../components/district-block-cluster";
 import {useUserById} from "../../../../lib/api/hooks/users/useUserById";
+import {ApplicationId} from "../../../../components/shiksha-application";
 
 const {useForm} = Form;
 const EditUser: NextPage = () => {
@@ -19,6 +16,8 @@ const EditUser: NextPage = () => {
     const router = useRouter();
     const {mutate, isLoading} = useUserCreate();
     const [formTypes, setFormTypes] = useState([] as string[]);
+    const {changePassword, isLoading: changingPassword} = useUserCreate();
+
     const [designation, setDesignation] = useState('' as string);
     const [district, setDistrict] = useState('' as string);
     const [block, setBlock] = useState('' as string);
@@ -31,18 +30,18 @@ const EditUser: NextPage = () => {
     useEffect(() => {
         if (user) {
             form.setFieldsValue({...user, user: user});
-            setDesignation(user?.data?.roleData?.designation);
+            setDesignation(user?.designation);
             setTimeout(() => {
                 form.setFieldsValue({['district']: user.district});
                 setDistrict(user.district);
             }, 100);
             setTimeout(() => {
                 form.setFieldsValue({['block']: user.block});
-                setDistrict(user.block);
+                setBlock(user.block);
             }, 500);
             setTimeout(() => {
                 form.setFieldsValue({['cluster']: user.cluster});
-                setDistrict(user.cluster);
+                setCluster(user.cluster);
             }, 1000);
         }
     }, [user])
@@ -52,7 +51,8 @@ const EditUser: NextPage = () => {
                 'id': id
             })
         }
-    }, [id])
+    }, [id]);
+    console.log(user);
     useEffect(() => {
         form.setFieldsValue({['geographic_level']: getLevelFromDesignation(designation),});
         setDistrict('')
@@ -84,7 +84,7 @@ const EditUser: NextPage = () => {
                         values['registration'] = {
                             ['applicationId']: ApplicationId,
                             "username": values['user']['username'],
-                            "roles": [values['user']['data']['roleData']['designation']],
+                            "roles": [values['designation']],
                         };
                         values['user']['password'] = '1234abcd';
                         values['user']['data']['phone'] = values['user']['mobilePhone'];
@@ -101,7 +101,7 @@ const EditUser: NextPage = () => {
 
                         console.log(values);
                         mutate(values, (data: any) => {
-                            notification.success({message: 'User Added'});
+                            notification.success({message: 'User Updated'});
                             router.back();
                         });
                     }}>
@@ -130,7 +130,7 @@ const EditUser: NextPage = () => {
                     <Form.Item
                         label={'Designation'}
                         rules={[{required: true, message: 'Required'}]}
-                        name={['user', 'data', 'roleData', 'designation']}>
+                        name={['designation']}>
                         <Select
                             placeholder="Please select"
                             style={{width: '100%'}}
@@ -206,7 +206,14 @@ const EditUser: NextPage = () => {
                         name={['geographic_level']}>
                         <Input disabled={true}/>
                     </Form.Item>
-
+                    <Form.Item>
+                        <Button type={'primary'} color={'yellow'} loading={changingPassword} onClick={() => {
+                            changePassword({
+                                "loginId": user.username,
+                                "password": "1234abcd"
+                            }, ()=>notification.success({message: "Password Changed Successfully"}))
+                        }}>Change Password</Button>
+                    </Form.Item>
                     <Form.Item>
                         <Space>
                             <Button htmlType={'submit'} type={'primary'} loading={isLoading}>

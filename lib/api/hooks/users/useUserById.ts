@@ -38,10 +38,11 @@ export const useUserById = (_applicationId: string, params: FilterType = {}): Re
                     return {...u, fullName: u.fullName || (`${u.firstName} ${u.lastName || ''}`)}
                 })[0];
                 if (_u) {
-                    _u['geographic_level'] = getLevelFromDesignation(_u['user']?.['data']?.['roleData']?.['designation']);
-                    _u['district'] = getLevelFromDesignation(_u['user']?.['data']?.['roleData']?.['district']);
-                    _u['block'] = getLevelFromDesignation(_u['user']?.['data']?.['roleData']?.['block']);
-                    _u['cluster'] = getLevelFromDesignation(_u['user']?.['data']?.['roleData']?.['cluster']);
+                    _u['geographic_level'] = getLevelFromDesignation(_u?.registrations?.find((r: any)=>r.applicationId === applicationId)?.roles?.[0]);
+                    _u['designation'] = _u?.registrations?.find((r: any)=>r.applicationId === applicationId)?.roles?.[0];
+                    _u['district'] = _u['data']?.['roleData']?.['district'];
+                    _u['block'] = _u['data']?.['roleData']?.['block'];
+                    _u['cluster'] = _u['data']?.['roleData']?.['cluster'];
                     setUser(_u);
                 }
             }

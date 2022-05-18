@@ -11,12 +11,14 @@ import {useUserById} from "../../../../lib/api/hooks/users/useUserById";
 import {esamvaadDesignations} from "../../../../lib/esamvaad-designations";
 import {useUserUpdateById} from "../../../../lib/api/hooks/users/useUserUpdateById";
 import {useUserByIdFromHasura} from "../../../../lib/api/hooks/users/useUserByIdFromHasura";
+import {useUserCreate} from "../../../../lib/api/hooks/users/useUserCreate";
 
 const {useForm} = Form;
 const EditUser: NextPage = () => {
     const [form] = useForm();
     const router = useRouter();
     const {mutate, isLoading} = useUserUpdateById();
+    const {changePassword, isLoading: changingPassword} = useUserCreate();
     const [formTypes, setFormTypes] = useState([] as string[]);
     const [designation, setDesignation] = useState('' as string);
     const [udise, setUDISE] = useState('' as string);
@@ -44,7 +46,11 @@ const EditUser: NextPage = () => {
     }, [user])
     useEffect(() => {
         if (userFromHasura) {
-            form.setFieldsValue({employment: userFromHasura.employment,account_status: userFromHasura.account_status, designation: userFromHasura.designation});
+            form.setFieldsValue({
+                employment: userFromHasura.employment,
+                account_status: userFromHasura.account_status,
+                designation: userFromHasura.designation
+            });
             setDesignation(userFromHasura.designation);
         }
     }, [userFromHasura]);
@@ -92,7 +98,7 @@ const EditUser: NextPage = () => {
                         }
                         mutate(id, _v, (data: any) => {
                             notification.success({message: 'User Updated'});
-                            // router.back();
+                            router.back();
                         });
                     }}>
 
@@ -184,6 +190,7 @@ const EditUser: NextPage = () => {
                         </>
                     }
 
+
                     <Form.Item
                         label={<Space>School UDISE {school && <Tooltip title={`School: ${school.name}`}>
                             <CheckCircleFilled style={{color: 'green'}}/>
@@ -193,11 +200,14 @@ const EditUser: NextPage = () => {
                         <Input disabled={schoolMode} onChange={(e: any) => setUDISE(e.target.value)}/>
                     </Form.Item>
 
-                    {/*<Form.Item*/}
-                    {/*    label={'Registration Username'}*/}
-                    {/*    name={['registration', 'username']}>*/}
-                    {/*    <Input/>*/}
-                    {/*</Form.Item>*/}
+                    <Form.Item>
+                        <Button type={'primary'} color={'yellow'} loading={changingPassword} onClick={() => {
+                            changePassword({
+                                "loginId": user.username,
+                                "password": "himachal1234"
+                            }, ()=>notification.success({message: "Password Changed Successfully"}))
+                        }}>Change Password</Button>
+                    </Form.Item>
 
                     {/*<Form.Item*/}
                     {/*    label={'Timezone'}*/}
