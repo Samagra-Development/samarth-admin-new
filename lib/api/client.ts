@@ -49,7 +49,6 @@ export const client = async (endpoint: string, {body, ...customConfig}: any = {}
 
             const response = await window.fetch(BASE_URL + endpoint, config)
 
-            console.log(response);
             if (response.ok) {
                 if (response.status === 204) {
                     return {

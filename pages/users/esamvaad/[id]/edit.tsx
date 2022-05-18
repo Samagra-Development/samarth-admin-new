@@ -1,10 +1,8 @@
 import type {NextPage} from 'next'
 import styles from '../../../../styles/Users.module.scss';
 import {Button, Card, Form, Input, notification, Radio, Select, Space, Tooltip} from "antd";
-import {router} from "next/client";
 import {useRouter} from "next/router";
-import {useUserCreate} from "../../../../lib/api/hooks/users/useUserCreate";
-import {Applications} from "../../../../lib/api/hooks/users/useUsers";
+
 import {useEffect, useState} from "react";
 import {useSearchSchoolByUDISE} from "../../../../lib/api/hooks/schools/useSearchSchoolByUdise";
 import {ApplicationId} from "../../../../components/esamaad-application";
@@ -12,6 +10,7 @@ import {CheckCircleFilled} from "@ant-design/icons";
 import {useUserById} from "../../../../lib/api/hooks/users/useUserById";
 import {esamvaadDesignations} from "../../../../lib/esamvaad-designations";
 import {useUserUpdateById} from "../../../../lib/api/hooks/users/useUserUpdateById";
+import {useUserByIdFromHasura} from "../../../../lib/api/hooks/users/useUserByIdFromHasura";
 
 const {useForm} = Form;
 const EditUser: NextPage = () => {
@@ -26,6 +25,11 @@ const EditUser: NextPage = () => {
     const {user, refresh, isLoading: _fetchLoading} = useUserById(ApplicationId, {
         'id': router.query.id
     });
+    const {
+        user: userFromHasura,
+        refresh: refreshHasura,
+        isLoading: loadingHasura
+    } = useUserByIdFromHasura(router.query.id as string);
     const {school, refresh: fetchSchool} = useSearchSchoolByUDISE();
 
     const schoolMode = formTypes?.length == 1 && formTypes?.[0] === 'school';
@@ -35,9 +39,16 @@ const EditUser: NextPage = () => {
             form.setFieldsValue({...user, user: {...user, roles: _reg?.roles || []}});
             setFormTypes(_reg?.roles);
             setUDISE(user?.data?.udise);
-
+            refreshHasura(id);
         }
     }, [user])
+    useEffect(() => {
+        if (userFromHasura) {
+            form.setFieldsValue({employment: userFromHasura.employment, designation: userFromHasura.designation});
+            setDesignation(userFromHasura.designation);
+        }
+    }, [user]);
+    console.log(userFromHasura);
     useEffect(() => {
         if (id) {
             refresh(ApplicationId, {
@@ -127,7 +138,7 @@ const EditUser: NextPage = () => {
                         !schoolMode && <>
                             <Form.Item
                                 label={'Designation'}
-                                name={['user', 'designation']}>
+                                name={['designation']}>
                                 <Select
                                     placeholder="Please select"
                                     style={{width: '100%'}}
@@ -144,11 +155,11 @@ const EditUser: NextPage = () => {
 
                             <Form.Item
                                 label={'Mode Of Employment'}
-                                name={['user', 'data', 'modeOfEmployment']}>
+                                name={['employment']}>
                                 <Radio.Group>
                                     <Space direction="vertical">
                                         {
-                                            ['PERMANENT', 'CONTRACTUAL'].map((status: string) => {
+                                            ['Permanent', 'Contractual'].map((status: string) => {
                                                 return <Radio key={status} value={status}>{status}</Radio>
                                             })
                                         }
