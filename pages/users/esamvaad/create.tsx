@@ -56,7 +56,7 @@ const CreateUser: NextPage = () => {
                         values['user']['data']['school'] = school.id;
                         values['user']['password'] = 'himachal12345';
                         values['user']['data']['phone'] = values['user']['mobilePhone'];
-                        values['user']['data']['accountName'] = values['user']['fullName'];
+                        values['user']['data']['accountName'] = values['user']['firstName'];
                         delete values['user']['roles'];
 
                         mutate(values, (data: any) => {
@@ -76,7 +76,7 @@ const CreateUser: NextPage = () => {
                     <Form.Item
                         label={'Name'}
                         rules={[{required: true, message: 'Required'}]}
-                        name={['user', 'fullName']}>
+                        name={['user', 'firstName']}>
                         <Input/>
                     </Form.Item>
                     <Form.Item

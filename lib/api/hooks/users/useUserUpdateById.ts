@@ -1,8 +1,9 @@
 import {useMutation, useQueryClient} from "react-query";
-import {client} from "../../client";
+import {client, clientGQL} from "../../client";
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import {USERS} from "./useUsers";
+import {LocationInsertQuery} from "../locations/useLocationCreate";
 
 type ReturnType = {
     data: any
@@ -12,6 +13,14 @@ type ReturnType = {
 }
 export const UPDATE_USER = 'admin/updateUser/'
 
+export const UPDATE_USER_BY_ID_QUERY = `
+mutation($object:teacher_set_input!, $id:uuid!){
+  update_teacher(where:{user_id:{_eq:$id}}, _set:$object){
+    returning{
+      id
+    }
+  }
+}`
 export const useUserUpdateById = (): ReturnType => {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +29,17 @@ export const useUserUpdateById = (): ReturnType => {
     const mutate = async (id: string, data: any, onSuccess?: any) => {
         try {
             setIsLoading(true)
+            const d = {
+                designation: data.designation,
+                account_status: data.account_status,
+                employment: data.employment,
+            }
+            delete data['designation'];
+            delete data['employment'];
+            delete data['account_status'];
             const response = await client.patch(UPDATE_USER + id, data);
+            await clientGQL(UPDATE_USER_BY_ID_QUERY, {object: d, id: id})
+
             if (onSuccess) {
                 onSuccess(response)
             }

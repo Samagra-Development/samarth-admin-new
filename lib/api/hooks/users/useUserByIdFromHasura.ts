@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {client, clientGQL} from "../../client";
 import {getLevelFromDesignation} from "../../../../components/designation-level";
 import {LocationQuery} from "../locations/useLocations";
+import {LocationInsertQuery} from "../locations/useLocationCreate";
 
 type ReturnType = {
     user: any

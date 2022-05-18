@@ -44,11 +44,10 @@ const EditUser: NextPage = () => {
     }, [user])
     useEffect(() => {
         if (userFromHasura) {
-            form.setFieldsValue({employment: userFromHasura.employment, designation: userFromHasura.designation});
+            form.setFieldsValue({employment: userFromHasura.employment,account_status: userFromHasura.account_status, designation: userFromHasura.designation});
             setDesignation(userFromHasura.designation);
         }
-    }, [user]);
-    console.log(userFromHasura);
+    }, [userFromHasura]);
     useEffect(() => {
         if (id) {
             refresh(ApplicationId, {
@@ -81,16 +80,19 @@ const EditUser: NextPage = () => {
                         const _v = {
                             user: {
                                 mobilePhone: values['user']['mobilePhone'],
-                                fullName: values['user']['fullName'],
+                                firstName: values['user']['firstName'],
                                 data: {
                                     phone: values['user']['mobilePhone'],
-                                    accountName: values['user']['fullName'],
+                                    accountName: values['user']['firstName'],
                                 }
-                            }
+                            },
+                            designation: values.designation,
+                            account_status: values.account_status,
+                            employment: values.employment,
                         }
                         mutate(id, _v, (data: any) => {
-                            notification.success({message: 'User Added'});
-                            router.back();
+                            notification.success({message: 'User Updated'});
+                            // router.back();
                         });
                     }}>
 
@@ -105,7 +107,7 @@ const EditUser: NextPage = () => {
                     <Form.Item
                         label={'Name'}
                         rules={[{required: true, message: 'Required'}]}
-                        name={['user', 'fullName']}>
+                        name={['user', 'firstName']}>
                         <Input/>
                     </Form.Item>
                     <Form.Item
@@ -160,6 +162,19 @@ const EditUser: NextPage = () => {
                                     <Space direction="vertical">
                                         {
                                             ['Permanent', 'Contractual'].map((status: string) => {
+                                                return <Radio key={status} value={status}>{status}</Radio>
+                                            })
+                                        }
+                                    </Space>
+                                </Radio.Group>
+                            </Form.Item>
+                            <Form.Item
+                                label={'Account Status'}
+                                name={['account_status']}>
+                                <Radio.Group>
+                                    <Space direction="vertical">
+                                        {
+                                            ['ACTIVE', 'DEACTIVATED', 'PENDING', 'REJECTED'].map((status: string) => {
                                                 return <Radio key={status} value={status}>{status}</Radio>
                                             })
                                         }
