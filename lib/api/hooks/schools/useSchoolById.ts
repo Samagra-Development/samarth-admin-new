@@ -5,15 +5,20 @@ import {useQuery} from "react-query";
 import {useRouter} from "next/router";
 
 type ReturnType = {
-    location: any
+    school: any
     isLoading: boolean
     refresh: any
 }
-export const LocationByIdQuery = `query($id :Int!){
-  location_by_pk(id:$id){
-    cluster
-    block
-    district
+export const SchoolByIdQuery = `query($id :Int!){
+  school_by_pk(id:$id){
+    name
+    udise
+    location_id
+    session
+    is_active
+    type
+    latitude
+    longitude
     id
   }
 }`
@@ -22,21 +27,18 @@ export type FilterType = {
     page?: number,
     [x: string]: any
 }
-export const useLocationById = (id: any): ReturnType => {
+export const useSchoolById = (id: any): ReturnType => {
     const [isLoading, setIsLoading] = useState(false)
-    const [location, setLocation] = useState(null as any);
+    const [school, setSchool] = useState(null as any);
     const refresh = async (_id: any) => {
         try {
             setIsLoading(true)
-            console.log(_id);
-            console.log('===');
-            const res = await clientGQL(LocationByIdQuery, {
+            const res = await clientGQL(SchoolByIdQuery,{
                 id: _id
             });
             const response = await res.json();
-            console.log(response);
             if (response?.data) {
-                setLocation(response.data.location_by_pk)
+                setSchool(response.data.school_by_pk)
             }
         } catch (e) {
 
@@ -49,7 +51,7 @@ export const useLocationById = (id: any): ReturnType => {
         }
     }, [])
     return {
-        location,
+        school,
         isLoading,
         refresh,
     }

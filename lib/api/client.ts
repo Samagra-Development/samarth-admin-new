@@ -6,7 +6,7 @@ export const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 export const clientGQL = (query: string, variables: any = {}) => {
     const token = localStorage.getItem('token');
 
-    return fetch('http://139.59.46.189:8080/v1/graphql', {
+    return fetch('https://hpsamarth-hasura.in/v1/graphql', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -17,7 +17,7 @@ const CreateLocation: NextPage = () => {
         if (id) {
             refresh(id)
         }
-    }, [])
+    }, [id])
     useEffect(() => {
         if (location) {
             form.setFieldsValue(location);
