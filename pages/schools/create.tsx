@@ -1,15 +1,12 @@
 import type {NextPage} from 'next'
-import styles from '../../../styles/Users.module.scss';
+import styles from '../../styles/Users.module.scss';
 import {Button, Card, Col, Form, Input, notification, Radio, Row, Select, Space, Tooltip} from "antd";
 import {useRouter} from "next/router";
-import {useUserCreate} from "../../../lib/api/hooks/users/useUserCreate";
-import {ApplicationId} from "../../../components/esamaad-application";
 import {log} from "util";
 import {useEffect, useState} from "react";
-import {designationLevels} from "../../../components/designation-level";
-import {useSearchSchoolByUDISE} from "../../../lib/api/hooks/schools/useSearchSchoolByUdise";
 import {CheckCircleFilled} from "@ant-design/icons";
-import {esamvaadDesignations} from "../../../lib/esamvaad-designations";
+import {useUserCreate} from "../../lib/api/hooks/users/useUserCreate";
+import {useSearchSchoolByUDISE} from "../../lib/api/hooks/schools/useSearchSchoolByUdise";
 
 const {useForm} = Form;
 const CreateUser: NextPage = () => {
@@ -43,26 +40,26 @@ const CreateUser: NextPage = () => {
                         }
                     }}
                     onFinish={(values: any) => {
-                        values = JSON.parse(JSON.stringify({...values,}));
-                        values['registration'] = {
-                            ['applicationId']: ApplicationId,
-                            "username": values['user']['username'],
-                            "roles": values['user']['roles'],
-                        };
-                        if (!school) {
-                            notification.error({message: "School not found with this UDISE"});
-                            return;
-                        }
-                        values['user']['data']['school'] = school.id;
-                        values['user']['password'] = 'himachal12345';
-                        values['user']['data']['phone'] = values['user']['mobilePhone'];
-                        values['user']['data']['accountName'] = values['user']['fullName'];
-                        delete values['user']['roles'];
-
-                        mutate(values, (data: any) => {
-                            notification.success({message: 'User Added'});
-                            router.back();
-                        });
+                        // values = JSON.parse(JSON.stringify({...values,}));
+                        // values['registration'] = {
+                        //     ['applicationId']: ApplicationId,
+                        //     "username": values['user']['username'],
+                        //     "roles": values['user']['roles'],
+                        // };
+                        // if (!school) {
+                        //     notification.error({message: "School not found with this UDISE"});
+                        //     return;
+                        // }
+                        // values['user']['data']['school'] = school.id;
+                        // values['user']['password'] = 'himachal12345';
+                        // values['user']['data']['phone'] = values['user']['mobilePhone'];
+                        // values['user']['data']['accountName'] = values['user']['fullName'];
+                        // delete values['user']['roles'];
+                        //
+                        // mutate(values, (data: any) => {
+                        //     notification.success({message: 'User Added'});
+                        //     router.back();
+                        // });
                     }}>
 
                     <Form.Item
@@ -104,56 +101,7 @@ const CreateUser: NextPage = () => {
                             }
                         </Select>
                     </Form.Item>
-                    {
-                        formTypes?.indexOf('Principal') > -1 && <>
-                            <Form.Item
-                                label={'Designation'}
-                                name={['user', 'designation']}>
-                                <Select
-                                    placeholder="Please select"
-                                    style={{width: '100%'}}
-                                    onChange={(a: any) => setDesignation(a)}
-                                >
-                                    {
-                                        esamvaadDesignations.map((o) => {
-                                            return <Select.Option key={o.designation}
-                                                                  value={o.designation}>{o.designation}</Select.Option>
-                                        })
-                                    }
-                                </Select>
-                            </Form.Item>
 
-                            <Form.Item
-                                label={'Mode Of Employment'}
-                                name={['user', 'data', 'modeOfEmployment']}>
-                                <Radio.Group>
-                                    <Space direction="vertical">
-                                        {
-                                            ['Permanent', 'Contractual'].map((status: string) => {
-                                                return <Radio key={status} value={status}>{status}</Radio>
-                                            })
-                                        }
-                                    </Space>
-                                </Radio.Group>
-                            </Form.Item>
-                            <Form.Item
-                                label={'Username Status'}
-                                name={['user', 'usernameStatus']}>
-                                <Select>
-                                    {
-                                        ['ACTIVE'].map((status: string) => {
-                                            return <Select.Option key={status}>{status}</Select.Option>
-                                        })
-                                    }
-                                </Select>
-                            </Form.Item>
-                        </>
-                    }
-                    {/*<Form.Item*/}
-                    {/*    label={'Password'}*/}
-                    {/*    name={['user', 'password']}>*/}
-                    {/*    <Input placeholder={'This will be the default password'} disabled={true}/>*/}
-                    {/*</Form.Item>*/}
 
                     <Form.Item
                         label={<Space>School UDISE {school && <Tooltip title={`School: ${school.name}`}>

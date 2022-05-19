@@ -1,5 +1,5 @@
 import type {NextPage} from 'next'
-import styles from '../../../../styles/Users.module.scss';
+import styles from '../../../styles/Users.module.scss';
 import {Button, Card, Form, Input, notification, Radio, Select, Space, Tooltip} from "antd";
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
