@@ -63,12 +63,12 @@ const SchoolsList: NextPage = () => {
             key: 'actions',
             render: (a: any) => <Space>
                 {
-                    <Button shape={"circle"}>
-                        <EditFilled onClick={
-                            () => {
-                                router.push(`${asPath}/${a.id}/edit`)
-                            }
-                        }/>
+                    <Button shape={"circle"}  onClick={
+                        () => {
+                            router.push(`${asPath}/${a.id}/edit`)
+                        }
+                    }>
+                        <EditFilled/>
                     </Button>
                 }
             </Space>

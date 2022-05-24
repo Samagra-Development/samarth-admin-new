@@ -1,14 +1,15 @@
 import type {NextPage} from 'next'
 import {useRouter} from "next/router";
 import {Button, Form, Input, Select, Space, Table, Tag, Typography} from "antd";
-import {CheckCircleFilled, CodepenCircleFilled, EditFilled} from "@ant-design/icons";
+import {CheckCircleFilled, CodepenCircleFilled, DeleteFilled} from "@ant-design/icons";
 import {useEffect, useState} from "react";
 import {useLogin} from "../../lib/api/hooks/users/useLogin";
 import {useLocations} from "../../lib/api/hooks/locations/useLocations";
 import {DesktopList} from "../../components/layouts/list/desktop.list";
+import {useGradeAssessments} from "../../lib/api/hooks/grade-assessments/useGradeAssessments";
 
 const {Text} = Typography;
-const UsersList: NextPage = () => {
+const GradeAssessments: NextPage = () => {
     const router = useRouter()
     const [application, setApplication] = useState(null as any);
     const [search, setSearch] = useState('' as any);
@@ -16,54 +17,58 @@ const UsersList: NextPage = () => {
     const [page, setCurrentPage] = useState('' as any);
     const {asPath} = router;
     const {user, logout} = useLogin();
-    const {locations, pageSize, currentPage, total, refresh, isLoading} = useLocations({
+    const {grades, pageSize, currentPage, total, refresh, isLoading} = useGradeAssessments({
         numberOfResults: 10,
         page: 1
     });
     const columns = [
         {
-            title: 'Id',
-            dataIndex: 'id',
-            key: 'id',
+            title: 'Assessment Name',
+            dataIndex: ['assessment', 'type'],
+            key: 'assessment_name',
         },
         {
-            title: 'District',
-            dataIndex: 'district',
-            key: 'district',
+            title: 'UDISE',
+            dataIndex: ['school', 'udise'],
+            key: 'udise',
         },
         {
-            title: 'Block',
-            dataIndex: ['block'],
-            key: 'block',
+            title: 'Grade Number',
+            dataIndex: 'grade_number',
+            key: 'grade_number',
         },
         {
-            title: 'Cluster',
-            dataIndex: ['cluster'],
-            key: 'cluster',
+            title: 'Section',
+            dataIndex: 'section',
+            key: 'section',
         },
-
+        {
+            title: 'Stream Tag',
+            dataIndex: ['stream', 'tag'],
+            key: 'tag',
+        },
         {
             title: 'Actions',
             key: 'actions',
             render: (a: any) => <Space>
                 {
-                    <Button shape={"circle"}  onClick={
+                    <Button shape={"circle"} onClick={
                         () => {
-                            router.push(`${asPath}/${a.id}/edit`)
+
                         }
                     }>
-                        <EditFilled/>
+                        <DeleteFilled/>
                     </Button>
                 }
             </Space>
         },
     ];
     return (
-        <DesktopList title={application?.name} addEnable={true} filters={[
+        <DesktopList title={'Grade Assessments'} addEnable={true} filters={[
             <Input key={'search-udise'} value={search} placeholder={'Search'}
                    onChange={(e) => setSearch(e.target.value)}/>,
         ]}>
-            <Table loading={isLoading} dataSource={locations} columns={columns} pagination={{
+            <Table loading={isLoading} dataSource={grades} columns={columns} pagination={{
                 current: currentPage, total: total,
                 onChange: (_page) => {
                     setCurrentPage(_page);
@@ -76,4 +81,4 @@ const UsersList: NextPage = () => {
 }
 
 
-export default UsersList
+export default GradeAssessments

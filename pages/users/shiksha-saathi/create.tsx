@@ -9,12 +9,14 @@ import {designationLevels, getLevelFromDesignation} from "../../../components/de
 import {useSearchSchoolByUDISE} from "../../../lib/api/hooks/schools/useSearchSchoolByUdise";
 import {CheckCircleFilled} from "@ant-design/icons";
 import {getAllDistricts, getBlocks, getClusters, getVisibility} from "../../../components/district-block-cluster";
+import {useLogin} from "../../../lib/api/hooks/users/useLogin";
 
 const {useForm} = Form;
 const CreateUser: NextPage = () => {
     const [form] = useForm();
     const router = useRouter();
     const {mutate, isLoading} = useUserCreate();
+    const {user: _loggedInUser} = useLogin();
     const [formTypes, setFormTypes] = useState([] as string[]);
     const [designation, setDesignation] = useState('' as string);
     const [district, setDistrict] = useState('' as string);
@@ -121,7 +123,7 @@ const CreateUser: NextPage = () => {
                                 onChange={(a: any) => setDistrict(a)}
                             >
                                 {
-                                    getAllDistricts().map((o) => {
+                                    getAllDistricts('', _loggedInUser?.user).map((o) => {
                                         return <Select.Option key={o}
                                                               value={o}>{o}</Select.Option>
                                     })
@@ -140,7 +142,7 @@ const CreateUser: NextPage = () => {
                                 onChange={(a: any) => setBlock(a)}
                             >
                                 {
-                                    getBlocks(district).map((o) => {
+                                    getBlocks(district, '', _loggedInUser?.user).map((o) => {
                                         return <Select.Option key={o}
                                                               value={o}>{o}</Select.Option>
                                     })
@@ -159,7 +161,7 @@ const CreateUser: NextPage = () => {
                                 onChange={(a: any) => setCluster(a)}
                             >
                                 {
-                                    getClusters(block).map((o) => {
+                                    getClusters(block, '', _loggedInUser?.user).map((o) => {
                                         return <Select.Option key={o}
                                                               value={o}>{o}</Select.Option>
                                     })

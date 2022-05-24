@@ -68,7 +68,17 @@ const CreateSchool: NextPage = () => {
                         rules={[{required: true, message: 'Type Required'}]}
 
                         name={['type']}>
-                        <Input/>
+                        <Select
+                            placeholder="Please select"
+                            style={{width: '100%'}}
+                        >
+                            {
+                                ['GPS', 'GMS','GHS','GSSS'].map((o) => {
+                                    return <Select.Option key={o}
+                                                          value={o}>{o}</Select.Option>
+                                })
+                            }
+                        </Select>
                     </Form.Item>
                     <Form.Item
                         label={'Session'}
@@ -92,20 +102,7 @@ const CreateSchool: NextPage = () => {
                         name={['is_active']} valuePropName="checked" >
                         <Checkbox >Is Active</Checkbox>
                     </Form.Item>
-                    <Form.Item
-                        label={'Latitude'}
-                        rules={[]}
 
-                        name={['latitude']}>
-                        <InputNumber style={{width: '100%'}}/>
-                    </Form.Item>
-                    <Form.Item
-                        label={'Longitude'}
-                        rules={[]}
-
-                        name={['longitude']}>
-                        <InputNumber style={{width: '100%'}}/>
-                    </Form.Item>
 
                     <Form.Item
                         label={'Location'}

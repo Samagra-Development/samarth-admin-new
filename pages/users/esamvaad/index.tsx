@@ -39,7 +39,7 @@ const UsersList: NextPage = () => {
         },
         {
             title: 'Mobile Phone',
-            dataIndex: ['data','mobilePhone'],
+            dataIndex: ['data', 'mobilePhone'],
             key: 'mobilePhone',
         },
         {
@@ -63,12 +63,12 @@ const UsersList: NextPage = () => {
             key: 'actions',
             render: (a: any) => <Space>
                 {
-                    permissions?.canEdit && <Button shape={"circle"}>
-                        <EditFilled onClick={
-                            () => {
-                                router.push(`${asPath}/${a.id}/edit`)
-                            }
-                        }/>
+                    permissions?.canEdit && <Button shape={"circle"} onClick={
+                        () => {
+                            router.push(`${asPath}/${a.id}/edit`)
+                        }
+                    }>
+                        <EditFilled/>
                     </Button>
                 }
             </Space>
@@ -114,7 +114,7 @@ const UsersList: NextPage = () => {
                 current: currentPage, total: total,
                 onChange: (_page) => {
                     setCurrentPage(_page);
-                    refresh(applicationId, {page:_page, udise, role})
+                    refresh(applicationId, {page: _page, udise, role})
 
                 },
                 pageSize: pageSize

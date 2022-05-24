@@ -16,6 +16,10 @@ const SideBarItems = [
         name: 'Schools',
         key: '/schools'
     },
+    {
+        name: 'Grade Assessments',
+        key: '/grade-assessments'
+    },
 ];
 
 

@@ -15,11 +15,12 @@ export const clientGQL = (query: string, variables: any = {}) => {
         body: JSON.stringify({query, variables}),
     })
 }
-export const client = async (endpoint: string, {body, ...customConfig}: any = {}) => {
+export const client = async (endpoint: string, {body, baseUrl, ...customConfig}: any = {}) => {
     const headers: any = {'Content-Type': 'application/json'}
     if (customConfig?.['isMultipart']) {
         delete headers['Content-Type'];
     }
+    const _baseUrl = baseUrl || BASE_URL;
     const token = localStorage.getItem('token');
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
@@ -47,7 +48,7 @@ export const client = async (endpoint: string, {body, ...customConfig}: any = {}
         let data
         try {
 
-            const response = await window.fetch(BASE_URL + endpoint, config)
+            const response = await window.fetch(_baseUrl + endpoint, config)
 
             if (response.ok) {
                 if (response.status === 204) {
@@ -77,15 +78,15 @@ export const client = async (endpoint: string, {body, ...customConfig}: any = {}
                 let message = '';
                 let errors = [];
                 if (data.exception?.fieldErrors) {
-                    for(let i in data.exception?.fieldErrors){
+                    for (let i in data.exception?.fieldErrors) {
                         console.log(data.exception?.fieldErrors[i]);
-                        errors.push(data.exception?.fieldErrors[i]?.map((a: any)=>a.message)?.join(', '));
+                        errors.push(data.exception?.fieldErrors[i]?.map((a: any) => a.message)?.join(', '));
                     }
-                }else{
+                } else {
                     data.exception
                 }
                 message = errors.join(', ');
-                throw Error (message || 'Forbidden');
+                throw Error(message || 'Forbidden');
             } else if (response.body) {
                 data = await response.json();
                 notification.error({message: data.message})
