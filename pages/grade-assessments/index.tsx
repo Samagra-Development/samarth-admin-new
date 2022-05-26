@@ -93,7 +93,7 @@ const GradeAssessments: NextPage = () => {
         },
     ];
     return (
-        <DesktopList title={'Grade Assessments'} addEnable={true} filters={[
+        <DesktopList title={'Grade Assessments'} addEnable={false} filters={[
             <Input key={'search-udise'} value={search} placeholder={'Search'}
                    onChange={(e) => setSearch(e.target.value)}/>,
         ]}>
