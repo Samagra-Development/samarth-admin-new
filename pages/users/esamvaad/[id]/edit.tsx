@@ -204,7 +204,7 @@ const EditUser: NextPage = () => {
                         <Button type={'primary'} color={'yellow'} loading={changingPassword} onClick={() => {
                             changePassword({
                                 "loginId": user.username,
-                                "password": "himachal1234"
+                                "password": "himachal12345"
                             }, ()=>notification.success({message: "Password Changed Successfully"}))
                         }}>Change Password</Button>
                     </Form.Item>
