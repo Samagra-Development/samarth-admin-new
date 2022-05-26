@@ -1,6 +1,6 @@
 import type {NextPage} from 'next'
 import {useRouter} from "next/router";
-import {Button, Form, Input, Select, Space, Table, Tag, Typography} from "antd";
+import {Button, Col, Form, Input, Popover, Row, Select, Space, Table, Tag, Typography} from "antd";
 import {CheckCircleFilled, CodepenCircleFilled, DeleteFilled} from "@ant-design/icons";
 import {useEffect, useState} from "react";
 import {useLogin} from "../../lib/api/hooks/users/useLogin";
@@ -15,6 +15,7 @@ const GradeAssessments: NextPage = () => {
     const [search, setSearch] = useState('' as any);
     const [role, setRole] = useState('' as any);
     const [page, setCurrentPage] = useState('' as any);
+    const [selectedPopover, setSelectedPopover] = useState('' as any);
     const {asPath} = router;
     const {user, logout} = useLogin();
     const {grades, pageSize, currentPage, total, refresh, isLoading} = useGradeAssessments({
@@ -52,13 +53,41 @@ const GradeAssessments: NextPage = () => {
             key: 'actions',
             render: (a: any) => <Space>
                 {
-                    <Button shape={"circle"} onClick={
-                        () => {
+                    <Popover
+                        content={
+                            <div>
+                                <Row gutter={20} wrap={false}>
+                                    <Col>
+                                        <Button onClick={() => {
 
+                                        }} type={'primary'}>Delete</Button>
+                                    </Col>
+                                    <Col>
+                                        <Button danger={true}>Cancel</Button>
+                                    </Col>
+                                </Row>
+                            </div>
                         }
-                    }>
-                        <DeleteFilled/>
-                    </Button>
+                        title="Delete Assessment"
+                        placement={'left'}
+                        trigger="click"
+                        visible={selectedPopover === a.id}
+                        onVisibleChange={(e: any) => {
+                            if (!e) {
+                                setSelectedPopover(false);
+                            }
+                        }
+                        }
+                    >
+                        <Button shape={"circle"} onClick={
+                            () => {
+                                console.log(a)
+                                setSelectedPopover(a.id);
+                            }
+                        }>
+                            <DeleteFilled/>
+                        </Button>
+                    </Popover>
                 }
             </Space>
         },

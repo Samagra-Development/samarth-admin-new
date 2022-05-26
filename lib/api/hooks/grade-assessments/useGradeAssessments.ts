@@ -14,7 +14,7 @@ type ReturnType = {
     pageSize: number
 }
 export const GradeAssessmentQuery = `query($limit:Int, $offset: Int){
-  grade_assessment {
+  grade_assessment (limit:$limit,offset:$offset){
     assessment {
       type
     }
@@ -23,6 +23,7 @@ export const GradeAssessmentQuery = `query($limit:Int, $offset: Int){
     stream {
       tag
     }
+    id
     created
     updated
     school {
