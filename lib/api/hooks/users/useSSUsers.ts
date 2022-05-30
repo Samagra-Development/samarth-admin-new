@@ -27,7 +27,7 @@ export type FilterType = {
     page?: number,
     [x: string]: any
 }
-export const useUsers = (_applicationId: string, {numberOfResults, page, queryString}: FilterType = {}): ReturnType => {
+export const useUsers = (_applicationId: string, {numberOfResults, page}: FilterType = {}): ReturnType => {
     const [isLoading, setIsLoading] = useState(false)
     const [startRow, setStartRow] = useState(0)
     const [currentPage, setCurrentPage] = useState(0)
@@ -38,7 +38,6 @@ export const useUsers = (_applicationId: string, {numberOfResults, page, querySt
         numberOfResults: _numberOfResults_,
         page: _page_,
         udise,
-        queryString,
         role
     }: FilterType = {}) => {
         try {
@@ -49,12 +48,19 @@ export const useUsers = (_applicationId: string, {numberOfResults, page, querySt
             setCurrentPage(_page);
             setPageSize(_numberOfResults);
             let response: any;
-            console.log(queryString);
-            console.log('=-=-=-');
-            if (queryString) {
+            if (udise || role) {
+
+                let queryString = [];
+                if (role) {
+                    queryString.push(`${role}`);
+                }
+                if (udise) {
+                    queryString.push(`${udise}`);
+                }
+
                 response = await client.get(USERS_SEARCH, {
                     params: {
-                        "queryString": queryString ,
+                        "queryString": queryString.join(','),
                         "applicationId": applicationId,
                         "startRow": _numberOfResults * (_page - 1),
                         "numberOfResults": _numberOfResults,

@@ -86,3 +86,13 @@ export const getLevelFromDesignation = (designation: string) => {
     const item = designationLevels.find((d) => designation === d.designation);
     return item?.scope;
 }
+export const getDistinctLevels = () => {
+    const items: string[] = [];
+    designationLevels.forEach((a) => {
+            if (items.indexOf(a.scope) === -1) {
+                items.push(a.scope);
+            }
+        }
+    )
+    return items;
+}

@@ -22,8 +22,11 @@ const UsersList: NextPage = () => {
     const {user, logout} = useLogin();
     const level = user?.user?.data?.roleData?.geographic_level;
     const permissions = Permissions[level]?.applications?.[applicationId];
+    const getApplicationQueryPart = () => `registrations.applicationId: ${applicationId}`;
+
     const {users, pageSize, currentPage, total, refresh, isLoading} = useUsers(applicationId, {
         numberOfResults: 10,
+        queryString: `(${getApplicationQueryPart()})`,
         page: 1
     });
     const columns = [
@@ -39,7 +42,7 @@ const UsersList: NextPage = () => {
         },
         {
             title: 'Mobile Phone',
-            dataIndex: ['data', 'mobilePhone'],
+            dataIndex: ['mobilePhone'],
             key: 'mobilePhone',
         },
         {
@@ -74,17 +77,19 @@ const UsersList: NextPage = () => {
             </Space>
         },
     ];
-    useEffect(() => {
-        if (applicationId) {
-            refresh(applicationId)
-            setApplication(Applications.find((a) => a.id === applicationId))
-        }
-    }, [applicationId])
 
     useEffect(() => {
-        setCurrentPage(1);
-        refresh(applicationId, {page: 1, udise, role})
-    }, [role, udise])
+        const _qs = [getApplicationQueryPart()];
+        setApplication(Applications.find((a) => a.id === applicationId))
+
+        if (udise) {
+            _qs.push(`${udise}`)
+        }
+        if (role) {
+            _qs.push(`registrations.roles :${role}`)
+        }
+        refresh(applicationId, {page: 1, queryString: `(${_qs.join(') AND (')})`})
+    }, [applicationId, udise, role])
 
     useEffect(() => {
         if (user) {
@@ -114,8 +119,6 @@ const UsersList: NextPage = () => {
                 current: currentPage, total: total,
                 onChange: (_page) => {
                     setCurrentPage(_page);
-                    refresh(applicationId, {page: _page, udise, role})
-
                 },
                 pageSize: pageSize
             }}/>
