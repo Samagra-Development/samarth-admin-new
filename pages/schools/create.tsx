@@ -25,6 +25,7 @@ import {useSchoolCreate} from "../../lib/api/hooks/schools/useSchoolCreate";
 const {useForm} = Form;
 const CreateSchool: NextPage = () => {
     const [form] = useForm();
+    const [search, setSearch] = useState('');
     const router = useRouter();
     const {mutate, isLoading} = useSchoolCreate();
     const {locations} = useLocations({numberOfResults: 1000});
@@ -36,7 +37,7 @@ const CreateSchool: NextPage = () => {
                     layout="vertical"
                     style={{maxWidth: '400px'}}
                     initialValues={{
-                        is_active : false
+                        is_active: false
                     }}
                     onFinish={(values: any) => {
 
@@ -72,7 +73,7 @@ const CreateSchool: NextPage = () => {
                             style={{width: '100%'}}
                         >
                             {
-                                ['GPS', 'GMS','GHS','GSSS'].map((o) => {
+                                ['GPS', 'GMS', 'GHS', 'GSSS'].map((o) => {
                                     return <Select.Option key={o}
                                                           value={o}>{o}</Select.Option>
                                 })
@@ -98,8 +99,8 @@ const CreateSchool: NextPage = () => {
                     </Form.Item>
                     <Form.Item
                         rules={[{required: true, message: 'Is Active Required'}]}
-                        name={['is_active']} valuePropName="checked" >
-                        <Checkbox >Is Active</Checkbox>
+                        name={['is_active']} valuePropName="checked">
+                        <Checkbox>Is Active</Checkbox>
                     </Form.Item>
 
 
@@ -108,8 +109,13 @@ const CreateSchool: NextPage = () => {
                         rules={[{required: true, message: 'Required'}]}
                         name={['location_id']}>
                         <Select
+                            showSearch={true}
                             placeholder="Please select"
                             style={{width: '100%'}}
+                            filterOption={(input, option) => {
+                                return (option!.children?.join(',') as unknown as string).toLowerCase().includes(input.toLowerCase());
+                            }
+                            }
                         >
                             {
                                 locations.map((o) => {
@@ -119,7 +125,6 @@ const CreateSchool: NextPage = () => {
                             }
                         </Select>
                     </Form.Item>
-
 
 
                     <Form.Item>

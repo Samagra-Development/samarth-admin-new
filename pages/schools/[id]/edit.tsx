@@ -118,8 +118,12 @@ const CreateSchool: NextPage = () => {
                         rules={[{required: true, message: 'Required'}]}
                         name={['location_id']}>
                         <Select
+                            showSearch={true}
                             placeholder="Please select"
                             style={{width: '100%'}}
+                            filterOption={(input, option) => {
+                                return (option!.children?.join(',') as unknown as string).toLowerCase().includes(input.toLowerCase())
+                            }}
                         >
                             {
                                 locations.map((o) => {
