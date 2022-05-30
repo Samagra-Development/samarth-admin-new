@@ -56,11 +56,11 @@ const CreateSchool: NextPage = () => {
                     }}>
 
                     <Form.Item
-                        label={'USISE'}
+                        label={'UDISE'}
                         rules={[{required: true, message: 'UDISE Required'}]}
 
                         name={['udise']}>
-                        <Input/>
+                        <Input maxLength={10} minLength={10}/>
                     </Form.Item>
 
 
