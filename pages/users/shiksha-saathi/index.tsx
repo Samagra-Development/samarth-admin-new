@@ -9,7 +9,7 @@ import {useEffect, useState} from "react";
 import {useLogin} from "../../../lib/api/hooks/users/useLogin";
 import {Permissions} from "../../../components/role-access";
 import {ApplicationId} from "../../../components/shiksha-application";
-import {designationLevels, getDistinctLevels} from "../../../components/designation-level";
+import {designationLevels, getDistinctLevels, getLowerDesignations} from "../../../components/designation-level";
 import {getAllDistricts, getBlocks, getClusters} from "../../../components/district-block-cluster";
 
 const {Text} = Typography;
@@ -62,9 +62,9 @@ const UsersList: NextPage = () => {
             _qs.push(`data.roleData.cluster:${_cluster}`)
         }
         if (designation) {
-            _qs.push(`registrations.roles :${designation}`)
+            _qs.push(`registrations.roles :${designation.replaceAll('(','\\(').replaceAll(')','\\)').replaceAll('/','\\/')}`)
         }
-        refresh(applicationId, {page: 1, queryString: `(${_qs.join(') AND (')})`})
+        refresh(applicationId, {page, queryString: `(${_qs.join(') AND (')})`})
     }, [designation, _district, _block, applicationId, _cluster, search, role, page]);
 
     const columns = [
@@ -130,6 +130,8 @@ const UsersList: NextPage = () => {
     }, [user]);
     return (
         <DesktopList title={application?.name} addEnable={permissions?.canCreate} filters={[
+            <Input key={'search-udise'} value={search} placeholder={'Search User'}
+                   onChange={(e) => setSearch(e.target.value)}/>,
             <Select
                 key={'search-designation'}
                 placeholder="Designation"
@@ -139,7 +141,7 @@ const UsersList: NextPage = () => {
                 onChange={(a: any) => setDesignation(a)}
             >
                 {
-                    designationLevels.map((o) => {
+                    getLowerDesignations(user).map((o) => {
                         return <Select.Option key={o.designation}
                                               value={o.designation}>{o.designation}</Select.Option>
                     })

@@ -90,6 +90,7 @@ const EditUser: NextPage = () => {
                                 data: {
                                     phone: values['user']['mobilePhone'],
                                     accountName: values['user']['firstName'],
+                                    school: school.id
                                 }
                             },
                             designation: values.designation,
@@ -205,7 +206,7 @@ const EditUser: NextPage = () => {
                             changePassword({
                                 "loginId": user.username,
                                 "password": "himachal12345"
-                            }, ()=>notification.success({message: "Password Changed Successfully"}))
+                            }, () => notification.success({message: "Password Changed Successfully"}))
                         }}>Change Password</Button>
                     </Form.Item>
 

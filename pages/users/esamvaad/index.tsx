@@ -88,8 +88,8 @@ const UsersList: NextPage = () => {
         if (role) {
             _qs.push(`registrations.roles :${role}`)
         }
-        refresh(applicationId, {page: 1, queryString: `(${_qs.join(') AND (')})`})
-    }, [applicationId, udise, role])
+        refresh(applicationId, {page, queryString: `(${_qs.join(') AND (')})`})
+    }, [applicationId, udise, role, page])
 
     useEffect(() => {
         if (user) {

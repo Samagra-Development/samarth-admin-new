@@ -86,6 +86,22 @@ export const getLevelFromDesignation = (designation: string) => {
     const item = designationLevels.find((d) => designation === d.designation);
     return item?.scope;
 }
+export const getLowerDesignations = ({user}: any) => {
+    const level = user?.data?.roleData?.geographic_level;
+    if (!level) {
+        return [];
+    }
+    if (level === 'District') {
+        return designationLevels.filter((a: any) => a.scope === 'District' || a.scope === 'Block' || a.scope === 'Cluster');
+    }
+    if (level === 'Block') {
+        return designationLevels.filter((a: any) => a.scope === 'Block' || a.scope === 'Cluster');
+    }
+    if (level === 'Cluster') {
+        return designationLevels.filter((a: any) => a.scope === 'Cluster');
+    }
+    return designationLevels;
+}
 export const getDistinctLevels = () => {
     const items: string[] = [];
     designationLevels.forEach((a) => {

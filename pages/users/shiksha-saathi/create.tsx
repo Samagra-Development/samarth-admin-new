@@ -5,7 +5,7 @@ import {useRouter} from "next/router";
 import {useUserCreate} from "../../../lib/api/hooks/users/useUserCreate";
 import {ApplicationId} from "../../../components/shiksha-application";
 import {useEffect, useState} from "react";
-import {designationLevels, getLevelFromDesignation} from "../../../components/designation-level";
+import {designationLevels, getLevelFromDesignation, getLowerDesignations} from "../../../components/designation-level";
 import {useSearchSchoolByUDISE} from "../../../lib/api/hooks/schools/useSearchSchoolByUdise";
 import {CheckCircleFilled} from "@ant-design/icons";
 import {getAllDistricts, getBlocks, getClusters, getVisibility} from "../../../components/district-block-cluster";
@@ -105,7 +105,7 @@ const CreateUser: NextPage = () => {
                             onChange={(a: any) => setDesignation(a)}
                         >
                             {
-                                designationLevels.map((o) => {
+                                getLowerDesignations(_loggedInUser).map((o) => {
                                     return <Select.Option key={o.designation}
                                                           value={o.designation}>{o.designation}</Select.Option>
                                 })

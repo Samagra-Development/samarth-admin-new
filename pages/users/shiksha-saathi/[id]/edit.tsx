@@ -5,10 +5,15 @@ import {router} from "next/client";
 import {useRouter} from "next/router";
 import {useUserCreate} from "../../../../lib/api/hooks/users/useUserCreate";
 import {useEffect, useState} from "react";
-import {designationLevels, getLevelFromDesignation} from "../../../../components/designation-level";
+import {
+    designationLevels,
+    getLevelFromDesignation,
+    getLowerDesignations
+} from "../../../../components/designation-level";
 import {getAllDistricts, getBlocks, getClusters, getVisibility} from "../../../../components/district-block-cluster";
 import {useUserById} from "../../../../lib/api/hooks/users/useUserById";
 import {ApplicationId} from "../../../../components/shiksha-application";
+import {useLogin} from "../../../../lib/api/hooks/users/useLogin";
 
 const {useForm} = Form;
 const EditUser: NextPage = () => {
@@ -17,6 +22,7 @@ const EditUser: NextPage = () => {
     const {mutate, isLoading} = useUserCreate();
     const [formTypes, setFormTypes] = useState([] as string[]);
     const {changePassword, isLoading: changingPassword} = useUserCreate();
+    const {user: _loggedInUser} = useLogin();
 
     const [designation, setDesignation] = useState('' as string);
     const [district, setDistrict] = useState('' as string);
@@ -87,6 +93,9 @@ const EditUser: NextPage = () => {
                             "roles": [values['designation']],
                         };
                         values['user']['password'] = '1234abcd';
+                        if (!values['user']['data']) {
+                            values['user']['data'] = {};
+                        }
                         values['user']['data']['phone'] = values['user']['mobilePhone'];
                         values['user']['data']['roleData']['geographic_level'] = values['geographic_level'];
                         values['user']['data']['roleData']['district'] = values['district'];
@@ -137,7 +146,7 @@ const EditUser: NextPage = () => {
                             onChange={(a: any) => setDesignation(a)}
                         >
                             {
-                                designationLevels.map((o) => {
+                                getLowerDesignations(_loggedInUser).map((o) => {
                                     return <Select.Option key={o.designation}
                                                           value={o.designation}>{o.designation}</Select.Option>
                                 })
@@ -211,7 +220,7 @@ const EditUser: NextPage = () => {
                             changePassword({
                                 "loginId": user.username,
                                 "password": "1234abcd"
-                            }, ()=>notification.success({message: "Password Changed Successfully"}))
+                            }, () => notification.success({message: "Password Changed Successfully"}))
                         }}>Change Password</Button>
                     </Form.Item>
                     <Form.Item>
