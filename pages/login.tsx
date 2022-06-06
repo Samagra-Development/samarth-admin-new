@@ -32,8 +32,8 @@ const LoginPage: NextPage = () => {
                     <Form
                         layout="vertical"
                         initialValues={{
-                            "loginId": "samarth-admin",
-                            "password": "abcd1234",
+                            "loginId": "",
+                            "password": "",
                         }}
                         style={{maxWidth: '400px'}}
                         onFinish={async (values: any) => {
