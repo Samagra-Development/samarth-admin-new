@@ -86,7 +86,11 @@ export const getLevelFromDesignation = (designation: string) => {
     const item = designationLevels.find((d) => designation === d.designation);
     return item?.scope;
 }
-export const getLowerDesignations = ({user}: any) => {
+export const getLowerDesignations = (_user: any) => {
+    const user = _user?.user || null;
+    if(!user){
+        return [];
+    }
     const level = user?.data?.roleData?.geographic_level;
     if (!level) {
         return [];
