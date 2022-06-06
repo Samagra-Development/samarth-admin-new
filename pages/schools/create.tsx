@@ -37,7 +37,7 @@ const CreateSchool: NextPage = () => {
                     layout="vertical"
                     style={{maxWidth: '400px'}}
                     initialValues={{
-                        is_active: false
+                        is_active: true
                     }}
                     onFinish={(values: any) => {
 
