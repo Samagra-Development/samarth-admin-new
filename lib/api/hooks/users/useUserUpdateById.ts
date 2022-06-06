@@ -29,16 +29,15 @@ export const useUserUpdateById = (): ReturnType => {
     const mutate = async (id: string, data: any, onSuccess?: any) => {
         try {
             setIsLoading(true)
-            const d = {
-                designation: data.designation,
-                account_status: data.account_status,
-                employment: data.employment,
-            }
+            const d = data.gql
             delete data['designation'];
             delete data['employment'];
             delete data['account_status'];
+            delete data['gql'];
             const response = await client.patch(UPDATE_USER + id, data);
-            await clientGQL(UPDATE_USER_BY_ID_QUERY, {object: d, id: id})
+            if(d){
+                await clientGQL(UPDATE_USER_BY_ID_QUERY, {object: d, id: id})
+            }
 
             if (onSuccess) {
                 onSuccess(response)

@@ -83,7 +83,7 @@ const EditUser: NextPage = () => {
                         }
                     }}
                     onFinish={(values: any) => {
-                        const _v = {
+                        const _v :any= {
                             user: {
                                 mobilePhone: values['user']['mobilePhone'],
                                 firstName: values['user']['firstName'],
@@ -97,6 +97,11 @@ const EditUser: NextPage = () => {
                             account_status: values.account_status,
                             employment: values.employment,
                         }
+                        _v['gql'] = {
+                            designation: _v.designation,
+                            account_status: _v.account_status,
+                            employment: _v.employment,
+                        };
                         mutate(id, _v, (data: any) => {
                             notification.success({message: 'User Updated'});
                             router.back();

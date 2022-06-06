@@ -14,12 +14,13 @@ import {getAllDistricts, getBlocks, getClusters, getVisibility} from "../../../.
 import {useUserById} from "../../../../lib/api/hooks/users/useUserById";
 import {ApplicationId} from "../../../../components/shiksha-application";
 import {useLogin} from "../../../../lib/api/hooks/users/useLogin";
+import {useUserUpdateById} from "../../../../lib/api/hooks/users/useUserUpdateById";
 
 const {useForm} = Form;
 const EditUser: NextPage = () => {
     const [form] = useForm();
     const router = useRouter();
-    const {mutate, isLoading} = useUserCreate();
+    const {mutate, isLoading} = useUserUpdateById();
     const [formTypes, setFormTypes] = useState([] as string[]);
     const {changePassword, isLoading: changingPassword} = useUserCreate();
     const {user: _loggedInUser} = useLogin();
@@ -108,7 +109,6 @@ const EditUser: NextPage = () => {
                         delete values['cluster'];
                         delete values['user']['roles'];
 
-                        console.log(values);
                         mutate(values, (data: any) => {
                             notification.success({message: 'User Updated'});
                             router.back();
