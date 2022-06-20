@@ -86,11 +86,13 @@ const EditUser: NextPage = () => {
                         const _v :any= {
                             user: {
                                 mobilePhone: values['user']['mobilePhone'],
-                                firstName: values['user']['firstName'],
+                                firstName: values['user']['fullName'],
+                                fullName: values['user']['fullName'],
                                 data: {
                                     phone: values['user']['mobilePhone'],
-                                    accountName: values['user']['firstName'],
-                                    school: school.id
+                                    accountName: values['user']['fullName'],
+                                    school: school.id,
+                                    udise: school.udise,
                                 }
                             },
                             designation: values.designation,
@@ -99,9 +101,12 @@ const EditUser: NextPage = () => {
                         }
                         _v['gql'] = {
                             designation: _v.designation,
+                            cadre: _v.designation,
+                            school_id: school.id,
                             account_status: _v.account_status,
                             employment: _v.employment,
                         };
+                        console.log(school);
                         mutate(id, _v, (data: any) => {
                             notification.success({message: 'User Updated'});
                             router.back();
@@ -119,7 +124,7 @@ const EditUser: NextPage = () => {
                     <Form.Item
                         label={'Name'}
                         rules={[{required: true, message: 'Required'}]}
-                        name={['user', 'firstName']}>
+                        name={['user', 'fullName']}>
                         <Input/>
                     </Form.Item>
                     <Form.Item
@@ -233,7 +238,7 @@ const EditUser: NextPage = () => {
                     {/*</Form.Item>*/}
                     <Form.Item>
                         <Space>
-                            <Button htmlType={'submit'} type={'primary'} loading={isLoading}>
+                            <Button htmlType={'submit'} type={'primary'} disabled={!school} loading={isLoading}>
                                 Submit
                             </Button>
                             <Button onClick={() => router.back()}>

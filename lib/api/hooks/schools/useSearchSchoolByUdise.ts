@@ -12,6 +12,7 @@ type ReturnType = {
 export const SCHOOL_BY_UDISE = `query($udise: Int!){
   school(limit:10, where:{udise:{_eq:$udise}}){
      name
+     udise
      id
   }
 }`;
