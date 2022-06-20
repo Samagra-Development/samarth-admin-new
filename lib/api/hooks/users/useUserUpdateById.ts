@@ -35,7 +35,7 @@ export const useUserUpdateById = (): ReturnType => {
             delete data['account_status'];
             delete data['gql'];
             const response = await client.patch(UPDATE_USER + id, data);
-            if(d){
+            if (d) {
                 await clientGQL(UPDATE_USER_BY_ID_QUERY, {object: d, id: id})
             }
 

@@ -98,8 +98,12 @@ const EditUser: NextPage = () => {
                             values['user']['data'] = {};
                         }
                         values['user']['data']['phone'] = values['user']['mobilePhone'];
+                        if(!values['user']['data']['roleData']){
+                            values['user']['data']['roleData'] = {};
+                        }
                         values['user']['data']['roleData']['geographic_level'] = values['geographic_level'];
                         values['user']['data']['roleData']['district'] = values['district'];
+                        values['user']['data']['roleData']['designation'] = values['designation'];
                         values['user']['data']['roleData']['block'] = values['block'];
                         values['user']['data']['roleData']['cluster'] = values['cluster'];
                         values['user']['data']['accountName'] = values['user']['fullName'];
@@ -109,7 +113,7 @@ const EditUser: NextPage = () => {
                         delete values['cluster'];
                         delete values['user']['roles'];
 
-                        mutate(values, (data: any) => {
+                        mutate(id,  values, (data: any) => {
                             notification.success({message: 'User Updated'});
                             router.back();
                         });
