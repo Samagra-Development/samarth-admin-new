@@ -3,6 +3,9 @@ import {Button, Card, Divider, Form, Input, Layout, Select, Space, Typography} f
 import {useLogin} from "../lib/api/hooks/users/useLogin";
 import {useEffect} from "react";
 import {useRouter} from "next/router";
+import {Applications} from "../lib/utility";
+
+const {Password} = Input;
 
 const {Title} = Typography;
 const {Content} = Layout;
@@ -12,9 +15,18 @@ const LoginPage: NextPage = () => {
     const router = useRouter();
     useEffect(() => {
         if (user) {
-            router.push('/users/esamvaad');
+            let found = false;
+            const {registrations} = user?.user;
+            if (registrations?.length) {
+                const eSamvaadRegistration = registrations?.find((a: any) => a.applicationId === Applications[0].id);
+                if (eSamvaadRegistration?.roles?.length === 1 && eSamvaadRegistration?.roles[0] === 'school') {
+                    found = true;
+                    router.push('/users/teachers');
+                }
+            }
+            if (!found)
+                router.push('/users/esamvaad');
         }
-        console.log(process.env);
     }, [user]);
     return (
         <Content>
@@ -47,7 +59,7 @@ const LoginPage: NextPage = () => {
                         <Form.Item
                             label={'Password'}
                             name={'password'}>
-                            <Input/>
+                            <Password/>
                         </Form.Item>
                         <Form.Item>
                             <Space>
