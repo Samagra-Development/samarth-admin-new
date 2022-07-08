@@ -66,7 +66,7 @@ const UsersList: NextPage = () => {
         }
         refresh(applicationId, {page, queryString: `(${_qs.join(') AND (')})`})
     }, [designation, _district, _block, applicationId, _cluster, search, role, page]);
-
+console.log(designation);
     const columns = [
         {
             title: 'Username',

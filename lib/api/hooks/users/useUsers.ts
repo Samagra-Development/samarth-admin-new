@@ -72,9 +72,13 @@ export const useUsers = (_applicationId: string, {numberOfResults, page, querySt
                 setUsers(response?.data?.result.users.map((u: any) => {
                     return {...u, fullName: u.fullName || (`${u.firstName} ${u.lastName || ''}`)}
                 }))
+            }else{
+                setUsers([]);
+                setTotal(0);
             }
         } catch (e) {
-
+            setUsers([]);
+            setTotal(0);
         }
         setIsLoading(false);
     }
