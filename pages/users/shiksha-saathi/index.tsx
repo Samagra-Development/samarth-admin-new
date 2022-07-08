@@ -92,7 +92,7 @@ const UsersList: NextPage = () => {
                     return <Text>-</Text>
                 }
                 const {roles} = registration;
-                return roles.map((role: any, index: number) => {
+                return roles&&roles.map((role: any, index: number) => {
                     return <Tag style={{marginBottom: '5px'}} key={index}>{role}</Tag>
                 })
             }
