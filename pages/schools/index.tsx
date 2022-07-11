@@ -7,20 +7,46 @@ import {useLogin} from "../../lib/api/hooks/users/useLogin";
 import {useLocations} from "../../lib/api/hooks/locations/useLocations";
 import {DesktopList} from "../../components/layouts/list/desktop.list";
 import {useSchools} from "../../lib/api/hooks/schools/useSchools";
+// import {ApplicationId} from "../../components/shiksha-application";
+
+import {getAllDistricts, getBlocks, getClusters} from "../../components/district-block-cluster";
 
 const {Text} = Typography;
 const SchoolsList: NextPage = () => {
     const router = useRouter()
     const [application, setApplication] = useState(null as any);
     const [search, setSearch] = useState('' as any);
+    const [_district, _setDistrict] = useState(null as any);
+    const [_block, _setBlock] = useState(null as any);
+    const [_cluster, _setCluster] = useState(null as any);
     const [role, setRole] = useState('' as any);
     const [page, setCurrentPage] = useState('' as any);
     const {asPath} = router;
     const {user, logout} = useLogin();
+    // const applicationId = ApplicationId;
+    // const getApplicationQueryPart = () => `registrations.applicationId: ${applicationId}`;
     const {schools, pageSize, currentPage, total, refresh, isLoading} = useSchools({
+        // queryString: ``,
         numberOfResults: 10,
         page: 1
     });
+    useEffect(() => {
+        const _qs = [];
+        if (search) {
+            _qs.push(search)
+        }
+        if (_district) {
+            _qs.push(_district)
+        }
+        if (_block) {
+            _qs.push(`${_block}`)
+        }
+        if (_cluster) {
+            _qs.push(`${_cluster}`)
+        }
+        refresh({page, queryString: _qs})
+    }, [_district, _block,_cluster, search, role, page]);
+
     const columns = [
         {
             title: 'Name',
@@ -78,6 +104,51 @@ const SchoolsList: NextPage = () => {
         <DesktopList title={application?.name} addEnable={true} filters={[
             <Input key={'search-udise'} value={search} placeholder={'Search'}
                    onChange={(e) => setSearch(e.target.value)}/>,
+               <Select
+                   key={'search-designation-district'}
+                   placeholder="District"
+                   allowClear={true}
+                   value={_district}
+                   style={{minWidth: '150px'}}
+                   onChange={(a: any) => _setDistrict(a)}
+               >
+                   {
+                       getAllDistricts('', user?.user).map((o: any) => {
+                           return <Select.Option key={o}
+                                                 value={o}>{o}</Select.Option>
+                       })
+                   }
+               </Select>,
+               _district ? <Select
+                   key={'search-designation-district'}
+                   placeholder="Block"
+                   allowClear={true}
+                   value={_block}
+                   style={{minWidth: '150px'}}
+                   onChange={(a: any) => _setBlock(a)}
+               >
+                   {
+                       getBlocks(_district, '', user?.user).map((o: any) => {
+                           return <Select.Option key={o}
+                                                 value={o}>{o}</Select.Option>
+                       })
+                   }
+               </Select> : <></>,
+               _district && _block ? <Select
+                   key={'search-designation-district'}
+                   placeholder="Cluster"
+                   allowClear={true}
+                   value={_cluster}
+                   style={{minWidth: '150px'}}
+                   onChange={(a: any) => _setCluster(a)}
+               >
+                   {
+                       getClusters(_block, '', user?.user).map((o: any) => {
+                           return <Select.Option key={o}
+                                                 value={o}>{o}</Select.Option>
+                       })
+                   }
+               </Select> : <></>
         ]}>
             <Table loading={isLoading} dataSource={schools} columns={columns} pagination={{
                 current: currentPage, total: total,
