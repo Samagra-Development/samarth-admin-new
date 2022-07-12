@@ -50,7 +50,7 @@ const UsersList: NextPage = () => {
     useEffect(() => {
         const _qs = [getApplicationQueryPart()];
         if (search) {
-            _qs.push(search)
+            _qs.push(`username:${search}`)
         }
         if (_district) {
             _qs.push(`data.roleData.district:${_district}`)
