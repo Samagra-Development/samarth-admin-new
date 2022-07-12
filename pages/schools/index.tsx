@@ -24,30 +24,27 @@ const SchoolsList: NextPage = () => {
     const [page, setCurrentPage] = useState('' as any);
     const {asPath} = router;
     const {user, logout} = useLogin();
-    // const applicationId = ApplicationId;
-    // const getApplicationQueryPart = () => `registrations.applicationId: ${applicationId}`;
     const {schools, pageSize, currentPage, total, refresh, isLoading} = useSchools({
-        // queryString: ``,
         numberOfResults: 10,
         page: 1
     });
     useEffect(() => {
-        const _qs = [];
-        if (search) {
-            _qs.push(search)
-        }
-        if (_district) {
-            _qs.push(_district)
-        }
-        if (_block) {
-            _qs.push(`${_block}`)
-        }
-        if (_cluster) {
-            _qs.push(`${_cluster}`)
-        }
-        if (type) {
-            _qs.push(`${type}`)
-        }
+        const _qs = {search,_district,_block,_cluster,type};
+        // if (search) {
+        //     _qs.push(search)
+        // }
+        // if (_district) {
+        //     _qs.push(_district)
+        // }
+        // if (_block) {
+        //     _qs.push(`${_block}`)
+        // }
+        // if (_cluster) {
+        //     _qs.push(`${_cluster}`)
+        // }
+        // if (type) {
+        //     _qs.push(`${type}`)
+        // }
         refresh({page, queryString: _qs})
     }, [_district, _block,_cluster, search, role, page,type]);
 
