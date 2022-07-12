@@ -17,6 +17,7 @@ const SchoolsList: NextPage = () => {
     const [application, setApplication] = useState(null as any);
     const [search, setSearch] = useState('' as any);
     const [_district, _setDistrict] = useState(null as any);
+    const [type, setType] = useState(null as any);
     const [_block, _setBlock] = useState(null as any);
     const [_cluster, _setCluster] = useState(null as any);
     const [role, setRole] = useState('' as any);
@@ -44,8 +45,11 @@ const SchoolsList: NextPage = () => {
         if (_cluster) {
             _qs.push(`${_cluster}`)
         }
+        if (type) {
+            _qs.push(`${type}`)
+        }
         refresh({page, queryString: _qs})
-    }, [_district, _block,_cluster, search, role, page]);
+    }, [_district, _block,_cluster, search, role, page,type]);
 
     const columns = [
         {
@@ -104,6 +108,19 @@ const SchoolsList: NextPage = () => {
         <DesktopList title={application?.name} addEnable={true} filters={[
             <Input key={'search-udise'} value={search} placeholder={'Search'}
                    onChange={(e) => setSearch(e.target.value)}/>,
+                <Select
+                   key={'search-school-type'}
+                   placeholder="Type"
+                   allowClear={true}
+                   value={type}
+                   style={{minWidth: '150px'}}
+                   onChange={(a: any) => setType(a)}
+               >
+                   <Select.Option key={"GPS"} value={"GPS"}>{"GPS"}</Select.Option>
+                   <Select.Option key={"GMS"} value={"GMS"}>{"GMS"}</Select.Option>
+                   <Select.Option key={"GHS"} value={"GHS"}>{"GHS"}</Select.Option>
+                   <Select.Option key={"GSSS"} value={"GSSS"}>{"GSSS"}</Select.Option>
+               </Select>,
                <Select
                    key={'search-designation-district'}
                    placeholder="District"

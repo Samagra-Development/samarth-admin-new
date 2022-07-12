@@ -37,8 +37,8 @@ export const SchoolQuery = `query($limit:Int, $offset: Int){
 }`
 
 // ,location : {district:{_ilike:$district}}
-export const SchoolQuery2 = `query($limit:Int, $offset: Int, $udise: Int, $district: String, $block:String,$cluster:String){
-    school(limit:$limit, offset:$offset , where:{udise:{_eq:$udise},type: {_eq: "GPS"}, location: {cluster:{_ilike:$cluster},district: {_ilike: $district},block:{_ilike:$block}}}){
+export const SchoolQuery2 = `query($limit:Int, $offset: Int, $udise: Int, $district: String, $block:String,$cluster:String,$type:String){
+    school(limit:$limit, offset:$offset , where:{udise:{_eq:$udise},type: {_eq:$type}, location: {cluster:{_ilike:$cluster},district: {_ilike: $district},block:{_ilike:$block}}}){
       location{
           cluster
           block
@@ -57,8 +57,8 @@ export const SchoolQuery2 = `query($limit:Int, $offset: Int, $udise: Int, $distr
       }
     }
   }`
-export const SchoolQuery3 = `query($limit:Int, $offset: Int, $name: String, $district: String, $block:String,$cluster:String){
-    school(limit:$limit, offset:$offset , where:{name:{_eq:$name},type: {_eq: "GPS"}, location: {cluster:{_ilike:$cluster},district: {_ilike: $district},block:{_ilike:$block}}}){
+export const SchoolQuery3 = `query($limit:Int, $offset: Int, $name: String, $district: String, $block:String,$cluster:String,$type:String){
+    school(limit:$limit, offset:$offset , where:{name:{_eq:$name},type: {_eq:$type}, location: {cluster:{_ilike:$cluster},district: {_ilike: $district},block:{_ilike:$block}}}){
       location{
           cluster
           block
@@ -114,6 +114,8 @@ export const useSchools = ({numberOfResults, page, queryString}: FilterType = {}
                 params.district = "%%";
                 params.block = "%%";
                 params.cluster = "%%";
+                params.type = "%%"
+                console.log(params);
                 let q = SchoolQuery2;
                 if (queryString.length > 1) {
                     params.district = queryString[1];
@@ -124,6 +126,10 @@ export const useSchools = ({numberOfResults, page, queryString}: FilterType = {}
                 if (queryString.length > 3) {
                     params.cluster = queryString[3];
                 }
+                if (queryString.length > 4) {
+                  params.type = queryString[4];
+                  console.log(params)
+              }
 
                 if (isNaN(queryString[0])) {
                     params.name = queryString[0]
