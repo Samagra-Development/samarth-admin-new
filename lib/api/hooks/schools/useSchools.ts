@@ -37,8 +37,28 @@ export const SchoolQuery = `query($limit:Int, $offset: Int){
 }`
 
 // ,location : {district:{_ilike:$district}}
-export const SchoolQuery2 = `query($limit:Int, $offset: Int, $udise: Int, $district: String){
-    school(limit:$limit, offset:$offset , where:{udise:{_eq:$udise}}){
+export const SchoolQuery2 = `query($limit:Int, $offset: Int, $udise: Int, $district: String, $block:String,$cluster:String){
+    school(limit:$limit, offset:$offset , where:{udise:{_eq:$udise},type: {_eq: "GPS"}, location: {cluster:{_ilike:$cluster},district: {_ilike: $district},block:{_ilike:$block}}}){
+      location{
+          cluster
+          block
+          district
+      }
+      type
+      name
+      udise
+      session
+      is_active
+      id
+    }
+    school_aggregate{
+      aggregate{
+        count
+      }
+    }
+  }`
+export const SchoolQuery3 = `query($limit:Int, $offset: Int, $name: String, $district: String, $block:String,$cluster:String){
+    school(limit:$limit, offset:$offset , where:{name:{_eq:$name},type: {_eq: "GPS"}, location: {cluster:{_ilike:$cluster},district: {_ilike: $district},block:{_ilike:$block}}}){
       location{
           cluster
           block
@@ -86,14 +106,32 @@ export const useSchools = ({numberOfResults, page, queryString}: FilterType = {}
             let response: any;
             console.log(queryString[0]);
             console.log('=-=-=-');
-
+            let params: any = {
+                limit: _numberOfResults,
+                offset: _numberOfResults * (_page - 1),
+            };
             if (queryString.length) {
-                const res = await clientGQL(SchoolQuery2,{
-                    limit: _numberOfResults,
-                    offset: _numberOfResults * (_page - 1),
-                    udise: queryString[0] ,
-                    // district: queryString[1] || ""
-                })
+                params.district = "%%";
+                params.block = "%%";
+                params.cluster = "%%";
+                let q = SchoolQuery2;
+                if (queryString.length > 1) {
+                    params.district = queryString[1];
+                }
+                if (queryString.length > 2) {
+                    params.block = queryString[2];
+                }
+                if (queryString.length > 3) {
+                    params.cluster = queryString[3];
+                }
+
+                if (isNaN(queryString[0])) {
+                    params.name = queryString[0]
+                    q = SchoolQuery3;
+                } else {
+                    params.udise = queryString[0]
+                }
+                const res = await clientGQL(q, params)
                 response = await res.json();
             } else {
                 const res = await clientGQL(SchoolQuery, {
