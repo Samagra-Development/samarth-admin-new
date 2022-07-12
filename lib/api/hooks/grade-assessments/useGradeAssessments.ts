@@ -13,34 +13,15 @@ type ReturnType = {
   currentPage: number;
   pageSize: number;
 };
-export const GradeAssessmentQuery2 = `query($limit:Int, $offset: Int){
-  grade_assessment (limit:$limit,offset:$offset){
-    assessment {
-      type
-    }
-    grade_number
-    section
-    stream {
-      tag
-    }
-    id
-    created
-    updated
-    school {
-      udise
-    }
-  }
-    grade_assessment_aggregate {
-    aggregate{
-    count
-    }
-}
-}`;
-
+// ,school : {$schoolWhere},
+// , $schoolWhere: school_bool_exp
 export const GradeAssessmentQuery = `query ($limit: Int, $offset: Int, $district: String, $block: String, $cluster: String, $type: String) {
-  grade_assessment(limit: $limit, offset: $offset, where: {school: {location: {block: {_ilike: $block}, cluster: {_ilike: $cluster}, district: {_ilike: $district}} }, assessment: {type: {_ilike: $type}} }) {
+  grade_assessment(limit: $limit, offset: $offset, order_by: {created: desc}, where: {school: {location: {block: {_ilike: $block}, cluster: {_ilike: $cluster}, district: {_ilike: $district} }  } assessment: {type: {_ilike: $type}} }) {
     assessment {
       type
+      assessment_type {
+        name
+      }
     }
     grade_number
     section
@@ -61,10 +42,13 @@ export const GradeAssessmentQuery = `query ($limit: Int, $offset: Int, $district
   }
 }`;
 
-    export const GradeAssessmentQuery3 = `query ($limit: Int, $offset: Int, $district: String, $block: String, $cluster: String, $gradeNumber: Int, $type: String) {
-      grade_assessment(limit: $limit, offset: $offset, where: {school: {location: {block: {_ilike: $block}, cluster: {_ilike: $cluster}, district: {_ilike: $district}} }, grade_number: {_eq: $gradeNumber}, assessment: {type: {_ilike: $type}} }) {
+export const GradeAssessmentQuery2 = `query ($limit: Int, $offset: Int, $district: String, $block: String, $cluster: String, $gradeNumber: Int, $type: String) {
+      grade_assessment(limit: $limit, offset: $offset, order_by: {created: desc}, where: {school: {location: {block: {_ilike: $block}, cluster: {_ilike: $cluster}, district: {_ilike: $district}} }, grade_number: {_eq: $gradeNumber}, assessment: {type: {_ilike: $type}} }) {
         assessment {
           type
+          assessment_type {
+            name
+          }
         }
         grade_number
         section
@@ -84,6 +68,33 @@ export const GradeAssessmentQuery = `query ($limit: Int, $offset: Int, $district
         }
       }
     }`;
+export const Query =  `query ($limit: Int, $offset: Int, $schoolWhere: school_bool_exp) {
+  grade_assessment(limit: $limit, offset: $offset, where: {school: $schoolWhere}) {
+    assessment {
+      type
+      created
+      assessment_type {
+        name
+      }
+    }
+    grade_number
+    section
+    stream {
+      tag
+    }
+    id
+    created
+    updated
+    school {
+      udise
+    }
+  }
+  grade_assessment_aggregate {
+    aggregate {
+      count
+    }
+  }
+}`
 export type FilterType = {
   numberOfResults?: number;
   page?: number;
@@ -124,7 +135,7 @@ export const useGradeAssessments = ({
       // let q = temp;
 
       if (queryString.gradeNumber) {
-        q = GradeAssessmentQuery3;
+        q = GradeAssessmentQuery2;
         params.gradeNumber = queryString.gradeNumber;
       }
 
@@ -132,9 +143,15 @@ export const useGradeAssessments = ({
       params.block = "%%";
       params.cluster = "%%";
       params.type = "%%";
-
+      params.schoolWhere = {}
+      
       if (queryString.search) {
-        params.type = queryString.search;
+        if(isNaN(queryString.search)){
+          params.type = "%" + queryString.search + "%";
+        }
+        else{
+          params.schoolWhere = {"udise": {"_eq": queryString.search}}
+        }
       }
       if (queryString._district) {
         params.district = queryString._district;
@@ -145,6 +162,8 @@ export const useGradeAssessments = ({
       if (queryString._cluster) {
         params.cluster = queryString._cluster;
       }
+
+      // let q = Query;
       const res = await clientGQL(q, params);
       response = await res.json();
       console.log(response?.data);

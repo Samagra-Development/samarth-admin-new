@@ -62,6 +62,16 @@ const GradeAssessments: NextPage = () => {
       key: "assessment_name",
     },
     {
+        title: "Assessment Type",
+        dataIndex: ["assessment","assessment_type", "name"],
+        key: "assessment_type",
+      },
+      {
+        title: "Date of Submission",
+        dataIndex: ["created"],
+        key: "created",
+      },
+    {
       title: "UDISE",
       dataIndex: ["school", "udise"],
       key: "udise",
