@@ -92,11 +92,11 @@ export const SchoolQuery2 = `query($limit:Int, $offset: Int, $udise: Int, $distr
       is_active
       id
     }
-    school_aggregate{
-      aggregate{
-        count
-      }
+    school_aggregate(where: {udise: {_eq: $udise}, type: {_ilike: $type}, location: {cluster: {_ilike: $cluster}, district: {_ilike: $district}, block: {_ilike: $block}}}) {
+    aggregate {
+      count
     }
+  }
   }`;
 export const SchoolQuery3 = `query($limit:Int, $offset: Int, $name: String, $district: String, $block:String,$cluster:String,$type:String){
     school(limit:$limit, offset:$offset , where:{name:{_ilike:$name},type: {_ilike:$type}, location: {cluster:{_ilike:$cluster},district: {_ilike: $district},block:{_ilike:$block}}}){
@@ -112,11 +112,11 @@ export const SchoolQuery3 = `query($limit:Int, $offset: Int, $name: String, $dis
       is_active
       id
     }
-    school_aggregate{
-      aggregate{
-        count
-      }
+    school_aggregate(where: {name: {_eq: $name}, type: {_ilike: $type}, location: {cluster: {_ilike: $cluster}, district: {_ilike: $district}, block: {_ilike: $block}}}) {
+    aggregate {
+      count
     }
+  }
   }`;
 export type FilterType = {
   numberOfResults?: number;
