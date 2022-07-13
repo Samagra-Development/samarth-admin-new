@@ -94,6 +94,7 @@ const SchoolsList: NextPage = () => {
     return (
         <DesktopList title={application?.name} addEnable={true} filters={[
             <CSVLink
+                key={'CSV Link'}
               filename={"Expense_Table.csv"}
               data={allSchools}
               className="btn btn-primary"
