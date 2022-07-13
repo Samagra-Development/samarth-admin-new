@@ -10,6 +10,7 @@ type ReturnType = {
   schools: any[];
   isLoading: boolean;
   refresh: any;
+  allSchools: any[];
   total: number;
   startRow: number;
   currentPage: number;
@@ -36,7 +37,27 @@ export const SchoolQuery = `query($limit:Int, $offset: Int){
   }
 }`;
 
-// ,location : {district:{_ilike:$district}}
+export const AllSchoolQuery = `query($offset: Int){
+  school(offset:$offset){
+    location{
+        cluster
+        block
+        district
+    }
+    type
+    name
+    udise
+    session
+    is_active
+    id
+  }
+  school_aggregate{
+    aggregate{
+      count
+    }
+  }
+}`;
+
 export const SchoolQuery1 = `query($limit:Int, $offset: Int, $district: String, $block:String,$cluster:String,$type:String){
   school(limit:$limit, offset:$offset , where:{type: {_ilike:$type}, location: {cluster:{_ilike:$cluster},district: {_ilike: $district},block:{_ilike:$block}}}){
     location{
@@ -113,6 +134,7 @@ export const useSchools = ({
   const [pageSize, setPageSize] = useState(20);
   const [total, setTotal] = useState(0);
   const [schools, setSchools] = useState([] as any[]);
+  const [allSchools, setAllSchools] = useState([] as any[]);
   const refresh = async ({
     numberOfResults: _numberOfResults_,
     page: _page_,
@@ -198,14 +220,58 @@ export const useSchools = ({
     } catch (e) {}
     setIsLoading(false);
   };
+  const getAllSchools = async () => {
+    setIsLoading(true);
+    try {
+      const res = await clientGQL(AllSchoolQuery, {
+        offset: 0,
+      });
+      const response = await res.json();
+
+      if (response?.data) {
+        const data: any = [];
+        const tempData = response.data.school.map((element: any) => {
+          const temp = {
+            Id: "",
+            "Is Active": "",
+            Name: "",
+            Session: "",
+            Type: "",
+            UDISE: "",
+            District: "",
+            Block: "",
+            Cluster: "",
+          };
+
+          temp.Id = element.id;
+          temp["Is Active"] = element.is_active;
+          temp.Name = element.name;
+          temp.Session = element.session;
+          temp.Type = element.type;
+          temp.UDISE = element.udise;
+          temp.District = element.location.district;
+          temp.Block = element.location.block;
+          temp.Cluster = element.location.cluster;
+
+          data.push(temp);
+          return temp
+        });
+        setAllSchools(tempData);
+      }
+    } catch (err) {}
+    setIsLoading(false);
+  };
+
   useEffect(() => {
     refresh({ numberOfResults, page });
+    getAllSchools();
   }, []);
   return {
     schools,
     isLoading,
     total,
     refresh,
+    allSchools,
     pageSize,
     currentPage,
     startRow,

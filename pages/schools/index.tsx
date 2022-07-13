@@ -7,6 +7,7 @@ import {useLogin} from "../../lib/api/hooks/users/useLogin";
 import {useLocations} from "../../lib/api/hooks/locations/useLocations";
 import {DesktopList} from "../../components/layouts/list/desktop.list";
 import {useSchools} from "../../lib/api/hooks/schools/useSchools";
+import {CSVLink} from "react-csv";
 // import {ApplicationId} from "../../components/shiksha-application";
 
 import {getAllDistricts, getBlocks, getClusters} from "../../components/district-block-cluster";
@@ -22,29 +23,18 @@ const SchoolsList: NextPage = () => {
     const [_cluster, _setCluster] = useState(null as any);
     const [role, setRole] = useState('' as any);
     const [page, setCurrentPage] = useState('' as any);
+    
     const {asPath} = router;
     const {user, logout} = useLogin();
-    const {schools, pageSize, currentPage, total, refresh, isLoading} = useSchools({
+    const {schools, pageSize, currentPage, total, refresh, isLoading,allSchools} = useSchools({
         numberOfResults: 10,
         page: 1
     });
+    console.log(total)
+    console.log(allSchools);
+
     useEffect(() => {
         const _qs = {search,_district,_block,_cluster,type};
-        // if (search) {
-        //     _qs.push(search)
-        // }
-        // if (_district) {
-        //     _qs.push(_district)
-        // }
-        // if (_block) {
-        //     _qs.push(`${_block}`)
-        // }
-        // if (_cluster) {
-        //     _qs.push(`${_cluster}`)
-        // }
-        // if (type) {
-        //     _qs.push(`${type}`)
-        // }
         refresh({page, queryString: _qs})
     }, [_district, _block,_cluster, search, role, page,type]);
 
@@ -103,6 +93,13 @@ const SchoolsList: NextPage = () => {
     ];
     return (
         <DesktopList title={application?.name} addEnable={true} filters={[
+            <CSVLink
+              filename={"Expense_Table.csv"}
+              data={allSchools}
+              className="btn btn-primary"
+            >
+              Export to CSV
+            </CSVLink>,
             <Input key={'search-udise'} value={search} placeholder={'Search'}
                    onChange={(e) => setSearch(e.target.value)}/>,
                 <Select
