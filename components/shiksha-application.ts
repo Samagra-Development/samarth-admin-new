@@ -1,0 +1,1 @@
+export const ApplicationId = '1ae074db-32f3-4714-a150-cc8a370eafd1';
