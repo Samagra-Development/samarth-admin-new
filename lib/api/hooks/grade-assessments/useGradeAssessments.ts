@@ -13,123 +13,6 @@ type ReturnType = {
   currentPage: number;
   pageSize: number;
 };
-// ,school : {$schoolWhere},
-// , $schoolWhere: school_bool_exp
-// order_by: {created: desc},
-export const GradeAssessmentQuery = `query ($limit: Int, $offset: Int, $district: String, $block: String, $cluster: String, $type: String) {
-  grade_assessment(limit: $limit, offset: $offset,  where: {school: {location: {block: {_ilike: $block}, cluster: {_ilike: $cluster}, district: {_ilike: $district}} }, assessment: {type: {_ilike: $type}} }) {
-    assessment {
-      type
-      assessment_type {
-        name
-      }
-    }
-    grade_number
-    section
-    stream {
-      tag
-    }
-    id
-    created
-    updated
-    school {
-      udise
-    }
-  }
-  grade_assessment_aggregate {
-    aggregate {
-      count
-    }
-  }
-}`;
-
-export const GradeAssessmentQuery1 = `query ($limit: Int, $offset: Int, $district: String, $block: String, $cluster: String, $type: String, $schoolWhere: school_bool_exp) {
-  grade_assessment(limit: $limit, offset: $offset,  where: {school: $schoolWhere}, {school :{location: {block: {_ilike: $block}, cluster: {_ilike: $cluster}, district: {_ilike: $district}} }, assessment: {type: {_ilike: $type}} }) {
-    assessment {
-      type
-      assessment_type {
-        name
-      }
-    }
-    grade_number
-    section
-    stream {
-      tag
-    }
-    id
-    created
-    updated
-    school {
-      udise
-    }
-  }
-  grade_assessment_aggregate {
-    aggregate {
-      count
-    }
-  }
-}`;
-
-export const GradeAssessmentQuery2 = `query ($limit: Int, $offset: Int, $district: String, $block: String, $cluster: String, $gradeNumber: Int, $type: String) {
-      grade_assessment(limit: $limit, offset: $offset, order_by: {created: desc}, where: {school: {location: {block: {_ilike: $block}, cluster: {_ilike: $cluster}, district: {_ilike: $district}} }, grade_number: {_eq: $gradeNumber}, assessment: {type: {_ilike: $type}} }) {
-        assessment {
-          type
-          assessment_type {
-            name
-          }
-        }
-        grade_number
-        section
-        stream {
-          tag
-        }
-        id
-        created
-        updated
-        school {
-          udise
-        }
-      }
-      grade_assessment_aggregate {
-        aggregate {
-          count
-        }
-      }
-    }`;
-export const Query = `query ($limit: Int, $offset: Int, $schoolWhere: school_bool_exp) {
-  grade_assessment(limit: $limit, offset: $offset, where: $schoolWhere ) {
-    school{
-      location{
-        block
-        district
-        cluster
-      }
-    }
-    assessment {
-      type
-      created
-      assessment_type {
-        name
-      }
-    }
-    grade_number
-    section
-    stream {
-      tag
-    }
-    id
-    created
-    updated
-    school {
-      udise
-    }
-  }
-  grade_assessment_aggregate {
-    aggregate {
-      count
-    }
-  }
-}`;
 
 export const tempQuery = `query ($limit: Int, $offset: Int, $grade_assessmentWhere: grade_assessment_bool_exp) {
   grade_assessment(limit: $limit, offset: $offset, where: $grade_assessmentWhere) {
@@ -209,16 +92,12 @@ export const useGradeAssessments = ({
         type: "%%",
         gradeNumber: {},
       };
-      // params.type = "%%";
-      // params.gradeNumber = {};
 
       if (queryString.gradeNumber) {
-        // params.gradeNumber = {"_eq": queryString.gradeNumber}
         temp.gradeNumber = { _eq: queryString.gradeNumber };
       }
       if (queryString.search) {
         if (isNaN(queryString.search)) {
-          // params.type = "%" + queryString.search + "%";
           temp.type = "%" + queryString.search + "%";
         } else {
           temp.udise = { _eq: queryString.search };
@@ -233,8 +112,6 @@ export const useGradeAssessments = ({
       if (queryString._cluster) {
         temp.cluster = queryString._cluster;
       }
-
-      // params.schoolWhere =  {"grade_number": temp.gradeNumber ,"assessment": {"type": {"_ilike": temp.type}} , "school" : {"udise": temp.udise,"location": {"block": {"_ilike":temp.block },"district": {"_ilike": temp.district},"cluster":  {"_ilike": temp.cluster}}} };
       params.grade_assessmentWhere = {
         grade_number: temp.gradeNumber,
         assessment: {

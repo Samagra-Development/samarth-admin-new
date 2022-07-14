@@ -10,7 +10,7 @@ type ReturnType = {
   schools: any[];
   isLoading: boolean;
   refresh: any;
-  allSchools: any[];
+  allSchool: any[];
   total: number;
   startRow: number;
   currentPage: number;
@@ -37,8 +37,8 @@ export const SchoolQuery = `query($limit:Int, $offset: Int){
   }
 }`;
 
-export const AllSchoolQuery = `query($offset: Int){
-  school(offset:$offset){
+export const AllSchoolQuery = `query($offset: Int, $district: String, $block:String, $cluster:String){
+  school(offset:$offset,where:{location: {cluster:{_ilike:$cluster},district: {_ilike: $district},block:{_ilike:$block}}}){
     location{
         cluster
         block
@@ -51,8 +51,8 @@ export const AllSchoolQuery = `query($offset: Int){
     is_active
     id
   }
-  school_aggregate{
-    aggregate{
+  school_aggregate(where: {location: {cluster: {_ilike: $cluster}, district: {_ilike: $district}, block: {_ilike: $block}}}) {
+    aggregate {
       count
     }
   }
@@ -72,8 +72,8 @@ export const SchoolQuery1 = `query($limit:Int, $offset: Int, $district: String, 
     is_active
     id
   }
-  school_aggregate{
-    aggregate{
+  school_aggregate(where: { type: {_ilike: $type}, location: {cluster: {_ilike: $cluster}, district: {_ilike: $district}, block: {_ilike: $block}}}) {
+    aggregate {
       count
     }
   }
@@ -134,7 +134,40 @@ export const useSchools = ({
   const [pageSize, setPageSize] = useState(20);
   const [total, setTotal] = useState(0);
   const [schools, setSchools] = useState([] as any[]);
-  const [allSchools, setAllSchools] = useState([] as any[]);
+  const [allSchool, setAllSchool] = useState([] as any[]);
+
+  const getAllSchools = async (params: any) => {
+    setIsLoading(true);
+    try {
+      const res = await clientGQL(AllSchoolQuery, {
+        offset: 0,
+        district: params.district || "%%",
+        block: params.block || "%%",
+        cluster: params.cluster || "%%",
+      });
+      const response = await res.json();
+      if (response?.data) {
+        const tempData = response.data.school.map((element: any) => {
+          const temp = {
+            Id: element.id,
+            ["Is Active"]: element.is_active,
+            Name: element.name,
+            Session: element.session,
+            Type: element.type,
+            UDISE: element.udise,
+            District: element.location.district,
+            Block: element.location.block,
+            Cluster: element.location.cluster,
+          };
+          return temp;
+        });
+
+        setAllSchool(tempData)
+      }
+    } catch (err) {}
+    setIsLoading(false);
+  };
+
   const refresh = async ({
     numberOfResults: _numberOfResults_,
     page: _page_,
@@ -143,15 +176,12 @@ export const useSchools = ({
     try {
       setIsLoading(true);
       const _page = _page_ || 1;
-      console.log(_page_);
       const _numberOfResults = _numberOfResults_ || 10;
       setStartRow(_numberOfResults * (_page - 1));
       setCurrentPage(_page);
       setPageSize(_numberOfResults);
 
       let response: any;
-      console.log(queryString);
-      console.log("=-=-=-");
       let params: any = {
         limit: _numberOfResults,
         offset: _numberOfResults * (_page - 1),
@@ -161,7 +191,6 @@ export const useSchools = ({
         params.block = "%%";
         params.cluster = "%%";
         params.type = "%%";
-        console.log(params);
         let q = SchoolQuery2;
         if (queryString._district) {
           params.district = queryString._district;
@@ -182,6 +211,7 @@ export const useSchools = ({
         } else {
           params.udise = queryString.search;
         }
+
         const res = await clientGQL(q, params);
         response = await res.json();
       } else if (!queryString.search) {
@@ -189,7 +219,7 @@ export const useSchools = ({
         params.block = "%%";
         params.cluster = "%%";
         params.type = "%%";
-        console.log(params);
+
         let q = SchoolQuery2;
         if (queryString._district) {
           params.district = queryString._district;
@@ -204,6 +234,7 @@ export const useSchools = ({
           params.type = queryString.type;
         }
         q = SchoolQuery1;
+        
         const res = await clientGQL(q, params);
         response = await res.json();
       } else {
@@ -213,65 +244,28 @@ export const useSchools = ({
         });
         response = await res.json();
       }
+
+      console.log(params);
+      
+
       if (response?.data) {
         setTotal(response?.data?.school_aggregate?.aggregate?.count);
         setSchools(response.data.school);
       }
+      getAllSchools(params);
     } catch (e) {}
-    setIsLoading(false);
-  };
-  const getAllSchools = async () => {
-    setIsLoading(true);
-    try {
-      const res = await clientGQL(AllSchoolQuery, {
-        offset: 0,
-      });
-      const response = await res.json();
 
-      if (response?.data) {
-        const data: any = [];
-        const tempData = response.data.school.map((element: any) => {
-          const temp = {
-            Id: "",
-            "Is Active": "",
-            Name: "",
-            Session: "",
-            Type: "",
-            UDISE: "",
-            District: "",
-            Block: "",
-            Cluster: "",
-          };
-
-          temp.Id = element.id;
-          temp["Is Active"] = element.is_active;
-          temp.Name = element.name;
-          temp.Session = element.session;
-          temp.Type = element.type;
-          temp.UDISE = element.udise;
-          temp.District = element.location.district;
-          temp.Block = element.location.block;
-          temp.Cluster = element.location.cluster;
-
-          data.push(temp);
-          return temp
-        });
-        setAllSchools(tempData);
-      }
-    } catch (err) {}
     setIsLoading(false);
   };
 
   useEffect(() => {
-    refresh({ numberOfResults, page });
-    getAllSchools();
   }, []);
   return {
     schools,
     isLoading,
     total,
     refresh,
-    allSchools,
+    allSchool,
     pageSize,
     currentPage,
     startRow,

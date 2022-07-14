@@ -125,13 +125,6 @@ export const useLocations = ({
         const res = await clientGQL(q, params);
         response = await res.json();
       }
-    //   else {
-    //     const res = await clientGQL(LocationQuery, {
-    //       limit: _numberOfResults,
-    //       offset: _numberOfResults * (_page - 1),
-    //     });
-    //     response = await res.json();
-    //   }
       if (response?.data) {
         setTotal(response?.data?.location_aggregate?.aggregate?.count);
         setLocations(response.data.location);

@@ -37,25 +37,27 @@ const UsersList: NextPage = () => {
   const [_cluster, _setCluster] = useState(null as any);
   const { asPath } = router;
   const { user, logout } = useLogin();
+  const level = user?.user?.data?.roleData?.geographic_level;
+
   const { locations, pageSize, currentPage, total, refresh, isLoading } =
     useLocations({
       numberOfResults: 10,
       page: 1,
     });
   useEffect(() => {
-    const _qs = {search, _district, _block,_cluster};
-    // if (search) {
-    //   _qs.push(search);
-    // }
-    // if (_district) {
-    //   _qs.push(_district);
-    // }
-    // if (_block) {
-    //   _qs.push(`${_block}`);
-    // }
-    // if (_cluster) {
-    //   _qs.push(`${_cluster}`);
-    // }
+    if (level === "District") {
+      _setDistrict(user?.user?.data?.roleData?.district);
+    } else if (level === "Block") {
+      _setDistrict(user?.user?.data?.roleData?.district);
+      _setBlock(user?.user?.data?.roleData?.block);
+    } else if (level === "Cluster") {
+      _setDistrict(user?.user?.data?.roleData?.district);
+      _setBlock(user?.user?.data?.roleData?.block);
+      _setCluster(user?.user?.data?.roleData?.cluster);
+    }
+  }, [user]);
+  useEffect(() => {
+    const _qs = { search, _district, _block, _cluster };
     refresh({ page, queryString: _qs });
   }, [_district, _block, _cluster, search, role, page]);
   const columns = [

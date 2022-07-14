@@ -40,17 +40,30 @@ const GradeAssessments: NextPage = () => {
   const [_district, _setDistrict] = useState(null as any);
   const [_block, _setBlock] = useState(null as any);
   const [_cluster, _setCluster] = useState(null as any);
-  //   const [assesmentType, setAssesmentType] = useState(null as any);
   const [gradeNumber, setGradeNumber] = useState(null as any);
 
   const { asPath } = router;
   const { user, logout } = useLogin();
+  const level = user?.user?.data?.roleData?.geographic_level;
+
   const { grades, pageSize, currentPage, total, refresh, isLoading } =
     useGradeAssessments({
       numberOfResults: 10,
       page: 1,
     });
 
+  useEffect(() => {
+    if (level === "District") {
+      _setDistrict(user?.user?.data?.roleData?.district);
+    } else if (level === "Block") {
+      _setDistrict(user?.user?.data?.roleData?.district);
+      _setBlock(user?.user?.data?.roleData?.block);
+    } else if (level === "Cluster") {
+      _setDistrict(user?.user?.data?.roleData?.district);
+      _setBlock(user?.user?.data?.roleData?.block);
+      _setCluster(user?.user?.data?.roleData?.cluster);
+    }
+  }, [user]);
   useEffect(() => {
     const _qs = { search, _district, _block, _cluster, gradeNumber };
     refresh({ page, queryString: _qs });
@@ -62,15 +75,15 @@ const GradeAssessments: NextPage = () => {
       key: "assessment_name",
     },
     {
-        title: "Assessment Type",
-        dataIndex: ["assessment","assessment_type", "name"],
-        key: "assessment_type",
-      },
-      {
-        title: "Date of Submission",
-        dataIndex: ["created"],
-        key: "created",
-      },
+      title: "Assessment Type",
+      dataIndex: ["assessment", "assessment_type", "name"],
+      key: "assessment_type",
+    },
+    {
+      title: "Date of Submission",
+      dataIndex: ["created"],
+      key: "created",
+    },
     {
       title: "UDISE",
       dataIndex: ["school", "udise"],
